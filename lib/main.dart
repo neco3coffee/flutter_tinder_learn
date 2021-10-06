@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tinder_learn/payment.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+void main() async {
+  await Hive.initFlutter();
+  var box = await Hive.openBox('myDB');
   print("まだアプリを実行してないよ！");
   runApp(MyApp());
   print("アプリが実行されました！");
@@ -55,7 +59,7 @@ class Counter extends StatelessWidget {
               Obx(() => Text("${cc.count.value}")),
               RaisedButton(
                 onPressed: () async {
-                  var data = await Get.to(PaymentPage());
+                  var data = await Get.to(() => PaymentPage());
                   print(data);
                 },
                 child: Icon(Icons.arrow_forward),
