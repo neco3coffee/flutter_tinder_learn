@@ -39,14 +39,21 @@ class CounterController extends GetxController {
 class Counter extends StatelessWidget {
   final cc = Get.put(CounterController());
   //これでccという名前でCounterControllerを使える
+  // @override
+  // Widget build(BuildContext context) {
+  //   ever(cc.count, (value) => print("$value has been changed"));
+  // }
   @override
-  Widget build(context) => Scaffold(
-      appBar: AppBar(title: Text("counter")),
-      body: Center(
-        child: Obx(() => Text("${cc.count.value}")),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => cc.count.value++,
-      ));
+  Widget build(context) {
+    ever(cc.count, (value) => print("$value has been changed"));
+    return Scaffold(
+        appBar: AppBar(title: Text("counter")),
+        body: Center(
+          child: Obx(() => Text("${cc.count.value}")),
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: () => cc.count.value++,
+        ));
+  }
 }
