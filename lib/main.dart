@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tinder_learn/payment.dart';
 import 'package:get/get.dart';
 
 void main() {
@@ -49,7 +50,18 @@ class Counter extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(title: Text("counter")),
         body: Center(
-          child: Obx(() => Text("${cc.count.value}")),
+          child: Row(
+            children: [
+              Obx(() => Text("${cc.count.value}")),
+              RaisedButton(
+                onPressed: () async {
+                  var data = await Get.to(PaymentPage());
+                  print(data);
+                },
+                child: Icon(Icons.arrow_forward),
+              )
+            ],
+          ),
         ),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
