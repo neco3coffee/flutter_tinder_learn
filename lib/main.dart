@@ -7,9 +7,11 @@ import 'package:hive_flutter/hive_flutter.dart';
 void main() async {
   await Hive.initFlutter();
   var box = await Hive.openBox('myDB');
+  box.put('name', 'David');
   print("まだアプリを実行してないよ！");
   runApp(MyApp());
   print("アプリが実行されました！");
+  print(box.get('name'));
 }
 
 class MyApp extends StatelessWidget {
@@ -44,10 +46,7 @@ class CounterController extends GetxController {
 class Counter extends StatelessWidget {
   final cc = Get.put(CounterController());
   //これでccという名前でCounterControllerを使える
-  // @override
-  // Widget build(BuildContext context) {
-  //   ever(cc.count, (value) => print("$value has been changed"));
-  // }
+
   @override
   Widget build(context) {
     ever(cc.count, (value) => print("$value has been changed"));
