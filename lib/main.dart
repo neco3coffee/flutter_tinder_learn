@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_tinder_learn/payment.dart';
-import 'package:get/get.dart';
+import 'package:flutter_tinder_learn/import.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+// widget
+import 'package:flutter_tinder_learn/payment.dart';
 
 void main() async {
   await Hive.initFlutter();

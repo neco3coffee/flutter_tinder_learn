@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_tinder_learn/import.dart';
 
 class PaymentPage extends StatelessWidget {
   @override
