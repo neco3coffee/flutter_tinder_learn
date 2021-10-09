@@ -17,7 +17,6 @@ class _RootPageState extends State<RootPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: getAppBar(),
-      // appBar: Text("this is appbar"),
       body: getBody(),
     );
   }
@@ -32,17 +31,27 @@ class _RootPageState extends State<RootPage> {
   getAppBar() {
     List bottomItems = [
       pageIndex == 0
-          ? "assets/images/explore_active_icon.svg"
-          : "assets/images/explore_icon.svg",
+          ? Icon(
+              Icons.auto_awesome_motion,
+              color: Colors.pink,
+              size: 36.0,
+            )
+          : Icon(
+              Icons.auto_awesome_motion_outlined,
+              color: Colors.pink,
+              size: 36.0,
+            ),
       pageIndex == 1
-          ? "assets/images/likes_active_icon.svg"
-          : "assets/images/likes_icon.svg",
-      pageIndex == 2
-          ? "assets/images/chat_active_icon.svg"
-          : "assets/images/chat_icon.svg",
-      pageIndex == 3
-          ? "assets/images/account_active_icon.svg"
-          : "assets/images/account_icon.svg",
+          ? Icon(
+              Icons.source,
+              color: Colors.pink,
+              size: 36.0,
+            )
+          : Icon(
+              Icons.source_outlined,
+              color: Colors.pink,
+              size: 36.0,
+            )
     ];
     return AppBar(
       backgroundColor: Colors.white,
@@ -58,9 +67,7 @@ class _RootPageState extends State<RootPage> {
                   pageIndex = index;
                 });
               },
-              icon: SvgPicture.asset(
-                bottomItems[index],
-              ),
+              icon: bottomItems[index],
             );
           }),
         ),

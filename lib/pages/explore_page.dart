@@ -98,7 +98,7 @@ class _ExplorePageState extends State<ExplorePage>
                             end: Alignment.topCenter,
                             begin: Alignment.bottomCenter)),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
@@ -133,30 +133,7 @@ class _ExplorePageState extends State<ExplorePage>
                                     SizedBox(
                                       height: 10,
                                     ),
-                                    Row(
-                                      children: [
-                                        Container(
-                                          width: 10,
-                                          height: 10,
-                                          decoration: BoxDecoration(
-                                              color: green,
-                                              shape: BoxShape.circle),
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text(
-                                          "Recently Active",
-                                          style: TextStyle(
-                                            color: white,
-                                            fontSize: 16,
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 15,
-                                    ),
+
                                     // Row(
                                     //   children: List.generate(
                                     //       pagesList[index]['likes'].length,
@@ -216,18 +193,6 @@ class _ExplorePageState extends State<ExplorePage>
                                   ],
                                 ),
                               ),
-                              Expanded(
-                                child: Container(
-                                  width: size.width * 0.2,
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.info,
-                                      color: white,
-                                      size: 28,
-                                    ),
-                                  ),
-                                ),
-                              )
                             ],
                           ),
                         )
@@ -270,32 +235,35 @@ class _ExplorePageState extends State<ExplorePage>
       child: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: List.generate(item_icons.length, (index) {
-            return Container(
-              width: item_icons[index]['size'],
-              height: item_icons[index]['size'],
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: grey.withOpacity(0.1),
-                      spreadRadius: 5,
-                      blurRadius: 10,
-                      // changes position of shadow
-                    ),
-                  ]),
-              child: Center(
-                child: SvgPicture.asset(
-                  item_icons[index]['icon'],
-                  width: item_icons[index]['icon_size'],
-                ),
-              ),
-            );
-          }),
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: const <Widget>[
+            Icon(
+              Icons.settings,
+              color: Colors.pink,
+              size: 36.0,
+            ),
+            Icon(
+              Icons.play_circle_outline_outlined,
+              color: Colors.pink,
+              size: 36.0,
+            ),
+            Icon(
+              Icons.motion_photos_paused_outlined,
+              color: Colors.pink,
+              size: 36.0,
+            ),
+            Icon(
+              Icons.sentiment_neutral_outlined,
+              color: Colors.pink,
+              size: 36.0,
+            )
+          ],
         ),
       ),
     );
   }
 }
+
+// motion_photos_paused_outlined
+// play_circle_outline_outlined 
+// sentiment_neutral_outlined 
