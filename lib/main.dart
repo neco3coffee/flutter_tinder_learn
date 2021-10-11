@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tinder_learn/pages/root_app.dart';
 import 'package:http/http.dart' as http;
 
-void main() {
+void main() async {
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -12,12 +12,20 @@ void main() {
       // home: RootPage(),
     ),
   );
+  final response = await http
+      // .get(Uri.parse('https://jsonplaceholder.typicode.com/albums/1'));
+      .get(Uri.parse('https://scrapbox.io/api/pages/neco3coffee-80957872'));
+  if (response.statusCode == 200) {
+    print("success");
+  } else {
+    print("failed");
+  }
 }
 
 class ScrapBox extends StatefulWidget {
   // const ScrapBox({ Key? key }) : super(key: key);
-  var response =
-      http.get(Uri.parse('https://jsonplaceholder.typicode.com/albums/1'));
+  // var response =
+  //     http.get(Uri.parse('https://scrapbox.io/api/pages/neco3coffee-80957872'));
 
   @override
   _ScrapBoxState createState() => _ScrapBoxState();
