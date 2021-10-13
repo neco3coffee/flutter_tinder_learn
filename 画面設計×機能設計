@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2021-10-13T00:45:28.649Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36" etag="9-j0eiAk0__X4xQ1dJtY" version="15.5.1" type="github">
+<mxfile host="app.diagrams.net" modified="2021-10-13T00:46:09.601Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36" etag="jPJhuLootsrQNF_Gn_x5" version="15.5.1" type="github">
   <diagram id="QDMlT14oRiUx16bBBUoS" name="Page-1">
     <mxGraphModel dx="2377" dy="1782" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -396,11 +396,6 @@
         <UserObject label="vertical_card_pager" link="https://pub.dev/packages/vertical_card_pager" id="oEgL-aDQShacDrmWiXQy-4">
           <mxCell style="fontColor=#0000EE;fontStyle=4;rounded=1;overflow=hidden;spacing=10;" vertex="1" parent="1">
             <mxGeometry x="541" y="652" width="135" height="38" as="geometry" />
-          </mxCell>
-        </UserObject>
-        <UserObject label="get" link="https://pub.dev/packages/get" id="oEgL-aDQShacDrmWiXQy-5">
-          <mxCell style="fontColor=#0000EE;fontStyle=4;rounded=1;overflow=hidden;spacing=10;" vertex="1" parent="1">
-            <mxGeometry x="-417" y="1250" width="47" height="38" as="geometry" />
           </mxCell>
         </UserObject>
         <mxCell id="oEgL-aDQShacDrmWiXQy-6" value="" style="endArrow=classic;html=1;rounded=0;startArrow=none;" edge="1" parent="1" source="oEgL-aDQShacDrmWiXQy-9">
