@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "164802367917",
+    "project_id": "flutter-tinder-learn",
+    "storage_bucket": "flutter-tinder-learn.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:164802367917:android:dc2c0ac8ad7f55e4fa9124",
+        "android_client_info": {
+          "package_name": "neco3coffee.flutter_tinder_learn"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "164802367917-9u3ocdnpu0om2uekmb4k2q4ns08f4pl0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD36fZkpCXChSKjl7PnJHGGMMOBxUFS68Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "164802367917-9u3ocdnpu0om2uekmb4k2q4ns08f4pl0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
