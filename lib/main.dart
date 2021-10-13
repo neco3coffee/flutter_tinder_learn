@@ -8,18 +8,19 @@ void main() async {
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: ScrapBox(),
-      // home: RootPage(),
+      // home: ScrapBox(),
+      home: RootPage(),
     ),
   );
   final response = await http
       // .get(Uri.parse('https://jsonplaceholder.typicode.com/albums/1'));
       .get(Uri.parse('https://scrapbox.io/api/pages/neco3coffee-80957872'));
-  if (response.statusCode == 200) {
-    print("success");
-  } else {
-    print("failed");
-  }
+  print(response.body);
+  // if (response.statusCode == 200) {
+  //   print("success");
+  // } else {
+  //   print("failed");
+  // }
 }
 
 class ScrapBox extends StatefulWidget {
