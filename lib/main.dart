@@ -152,3 +152,4 @@ void registerNewUser(BuildContext context) async {
   };
   usersRef.child(userCredential.user!.uid).set(userDataMap);
 }
+// ,
