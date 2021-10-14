@@ -3,17 +3,23 @@ import 'package:flutter/material.dart';
 
 // Import the firebase_core plugin
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  // final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+
+  // DatabaseReference usersRef =
+  //     FirebaseDatabase.instance.reference().child("users");
+  // UserCredential userCredential =
+  //     await FirebaseAuth.instance.signInAnonymously();
+  // print(userCredential.user?.uid);
+  // print(firebaseAuth.app.hashCode);
   runApp(MaterialApp(home: App()));
 }
 
-/// We are using a StatefulWidget such that we only create the [Future] once,
-/// no matter how many times our widget rebuild.
-/// If we used a [StatelessWidget], in the event where [App] is rebuilt, that
-/// would re-initialize FlutterFire and make our application re-enter loading state,
-/// which is undesired.
 class App extends StatefulWidget {
   // Create the initialization Future outside of `build`:
   @override
@@ -28,6 +34,8 @@ class _AppState extends State<App> {
     const Duration(seconds: 2),
     () => 'Data Loaded',
   );
+
+  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +80,25 @@ class _AppState extends State<App> {
               Padding(
                 padding: const EdgeInsets.only(top: 16),
                 child: Text('Page: ${snapshot.data}'),
-              )
+              ),
+              RaisedButton(
+                color: Colors.blue,
+                textColor: Colors.black,
+                child: Container(
+                  height: 50.0,
+                  child: Center(
+                    child: Text(
+                      "Create Account",
+                      style:
+                          TextStyle(fontSize: 18.0, fontFamily: "Brand Bold"),
+                    ),
+                  ),
+                ),
+                onPressed: () {
+                  // registerNewUser(context);
+                  registerNewUser(context);
+                },
+              ),
             ];
           } else if (snapshot.hasError) {
             children = <Widget>[
@@ -110,4 +136,19 @@ class _AppState extends State<App> {
       ),
     );
   }
+}
+
+void registerNewUser(BuildContext context) async {
+  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+
+  DatabaseReference usersRef =
+      FirebaseDatabase.instance.reference().child("users");
+  UserCredential userCredential =
+      await FirebaseAuth.instance.signInAnonymously();
+  print(userCredential.user?.uid);
+  Map userDataMap = {
+    "wpm": 50,
+    "iteration": [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377]
+  };
+  usersRef.child(userCredential.user!.uid).set(userDataMap);
 }
