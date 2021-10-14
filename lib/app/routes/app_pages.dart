@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'package:flutter_tinder_learn/app/modules/home/bindings/home_binding.dart';
 import 'package:flutter_tinder_learn/app/modules/home/views/home_view.dart';
