@@ -1,155 +1,698 @@
-// ignore: import_of_legacy_library_into_null_safe
+// // ignore: import_of_legacy_library_into_null_safe
+// import 'package:flutter/material.dart';
+
+// // Import the firebase_core plugin
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_database/firebase_database.dart';
+
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await Firebase.initializeApp();
+//   // final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+
+//   // DatabaseReference usersRef =
+//   //     FirebaseDatabase.instance.reference().child("users");
+//   // UserCredential userCredential =
+//   //     await FirebaseAuth.instance.signInAnonymously();
+//   // print(userCredential.user?.uid);
+//   // print(firebaseAuth.app.hashCode);
+//   runApp(MaterialApp(home: App()));
+// }
+
+// class App extends StatefulWidget {
+//   // Create the initialization Future outside of `build`:
+//   @override
+//   _AppState createState() => _AppState();
+// }
+
+// class _AppState extends State<App> {
+//   /// The future is part of the state of our widget. We should not call `initializeApp`
+//   /// directly inside [build].
+//   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+//   final Future<String> _calculation = Future<String>.delayed(
+//     const Duration(seconds: 2),
+//     () => 'Data Loaded',
+//   );
+
+//   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: FutureBuilder(
+//         // Initialize FlutterFire:
+//         future: _initialization,
+//         builder: (context, snapshot) {
+//           // // Check for errors
+//           // if (snapshot.hasError) {
+//           //   return SomethingWentWrong();
+//           // }
+
+//           // // Once complete, show your application
+//           // if (snapshot.connectionState == ConnectionState.done) {
+//           //   return MyAwesomeApp();
+//           // }
+
+//           // // Otherwise, show something whilst waiting for initialization to complete
+//           // return Loading();
+//           List<Widget> children;
+//           // if (snapshot.hasData) {
+//           //   children = <Widget>[
+//           //     const Icon(
+//           //       Icons.check_circle_outline,
+//           //       color: Colors.green,
+//           //       size: 60,
+//           //     ),
+//           //     Padding(
+//           //       padding: const EdgeInsets.only(top: 16),
+//           //       child: Text('Result: ${snapshot.data}'),
+//           //     )
+//           //   ];
+//           // }
+//           if (snapshot.connectionState == ConnectionState.done) {
+//             children = <Widget>[
+//               const Icon(
+//                 Icons.connect_without_contact_outlined,
+//                 color: Colors.green,
+//                 size: 60,
+//               ),
+//               Padding(
+//                 padding: const EdgeInsets.only(top: 16),
+//                 child: Text('Page: ${snapshot.data}'),
+//               ),
+//               RaisedButton(
+//                 color: Colors.blue,
+//                 textColor: Colors.black,
+//                 child: Container(
+//                   height: 50.0,
+//                   child: Center(
+//                     child: Text(
+//                       "Create Account",
+//                       style:
+//                           TextStyle(fontSize: 18.0, fontFamily: "Brand Bold"),
+//                     ),
+//                   ),
+//                 ),
+//                 onPressed: () {
+//                   // registerNewUser(context);
+//                   registerNewUser(context);
+//                 },
+//               ),
+//             ];
+//           } else if (snapshot.hasError) {
+//             children = <Widget>[
+//               const Icon(
+//                 Icons.error_outline,
+//                 color: Colors.red,
+//                 size: 100,
+//               ),
+//               Padding(
+//                 padding: const EdgeInsets.only(top: 20),
+//                 child: Text('Error: ${snapshot.error}'),
+//               )
+//             ];
+//           } else {
+//             children = const <Widget>[
+//               SizedBox(
+//                 child: CircularProgressIndicator(),
+//                 width: 60,
+//                 height: 60,
+//               ),
+//               Padding(
+//                 padding: EdgeInsets.only(top: 16),
+//                 child: Text('Awaiting result...'),
+//               )
+//             ];
+//           }
+//           return Center(
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               crossAxisAlignment: CrossAxisAlignment.center,
+//               children: children,
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
+
+// void registerNewUser(BuildContext context) async {
+//   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+
+//   DatabaseReference usersRef =
+//       FirebaseDatabase.instance.reference().child("users");
+//   UserCredential userCredential =
+//       await FirebaseAuth.instance.signInAnonymously();
+//   print(userCredential.user?.uid);
+//   Map userDataMap = {
+//     "wpm": 50,
+//     "iteration": [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377]
+//   };
+//   usersRef.child(userCredential.user!.uid).set(userDataMap);
+
+//   bool isLoggedIn() {
+//     return firebaseAuth.currentUser != null;
+//   }
+
+//   print(isLoggedIn());
+// }
+
+// // void display(BuildContext context) async {
+// //   print(userCredential.user?.uid);
+// // }
+
+// ------------------------------------
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-// Import the firebase_core plugin
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  // final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-
-  // DatabaseReference usersRef =
-  //     FirebaseDatabase.instance.reference().child("users");
-  // UserCredential userCredential =
-  //     await FirebaseAuth.instance.signInAnonymously();
-  // print(userCredential.user?.uid);
-  // print(firebaseAuth.app.hashCode);
-  runApp(MaterialApp(home: App()));
+void main() {
+  runApp(GetMaterialApp(
+    // It is not mandatory to use named routes, but dynamic urls are interesting.
+    initialRoute: '/home',
+    defaultTransition: Transition.native,
+    locale: Locale('pt', 'BR'),
+    getPages: [
+      //Simple GetPage
+      GetPage(name: '/home', page: () => LandingPage()),
+      // GetPage with custom transitions and bindings
+      // GetPage(
+      //   name: '/note',
+      //   page: () => Note(),
+      //   customTransition: SizeTransitions(),
+      //   binding: SampleBind(),
+      // ),
+      // // GetPage with default transitions
+      // GetPage(
+      //   name: '/swipe',
+      //   transition: Transition.cupertino,
+      //   page: () => Swipe(),
+      // ),
+      // GetPage(
+      //   name: '/scroll',
+      //   transition: Transition.cupertino,
+      //   page: () => Scroll(),
+      // ),
+    ],
+  ));
 }
 
-class App extends StatefulWidget {
-  // Create the initialization Future outside of `build`:
+class LandingPageController extends GetxController {
+  var tabIndex = 0.obs;
+
+  void changeTabIndex(int index) {
+    tabIndex.value = index;
+  }
+
   @override
-  _AppState createState() => _AppState();
+  void onInit() {
+    super.onInit();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 }
 
-class _AppState extends State<App> {
-  /// The future is part of the state of our widget. We should not call `initializeApp`
-  /// directly inside [build].
-  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
-  final Future<String> _calculation = Future<String>.delayed(
-    const Duration(seconds: 2),
-    () => 'Data Loaded',
-  );
+class LandingPage extends StatelessWidget {
+  final TextStyle unselectedLabelStyle = TextStyle(
+      color: Colors.white.withOpacity(0.5),
+      fontWeight: FontWeight.w500,
+      fontSize: 12);
 
-  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  final TextStyle selectedLabelStyle =
+      TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 12);
+
+  buildBottomNavigationMenu(context, landingPageController) {
+    return Obx(
+      () => MediaQuery(
+        data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+        child: SizedBox(
+          height: 54,
+          child: BottomNavigationBar(
+            showUnselectedLabels: true,
+            showSelectedLabels: true,
+            onTap: landingPageController.changeTabIndex,
+            currentIndex: landingPageController.tabIndex.value,
+            backgroundColor: Color.fromRGBO(36, 54, 101, 1.0),
+            unselectedItemColor: Colors.white.withOpacity(0.5),
+            selectedItemColor: Colors.white,
+            unselectedLabelStyle: unselectedLabelStyle,
+            selectedLabelStyle: selectedLabelStyle,
+            items: [
+              BottomNavigationBarItem(
+                icon: Container(
+                  margin: EdgeInsets.only(bottom: 7),
+                  child: Icon(
+                    Icons.note_add_outlined,
+                    size: 20.0,
+                  ),
+                ),
+                label: 'Note',
+                backgroundColor: Color.fromRGBO(36, 54, 101, 1.0),
+              ),
+              BottomNavigationBarItem(
+                icon: Container(
+                  margin: EdgeInsets.only(bottom: 7),
+                  child: Icon(
+                    Icons.play_lesson_outlined,
+                    size: 20.0,
+                  ),
+                ),
+                label: 'Explore',
+                backgroundColor: Color.fromRGBO(36, 54, 101, 1.0),
+              ),
+              BottomNavigationBarItem(
+                icon: Container(
+                  margin: EdgeInsets.only(bottom: 7),
+                  child: Icon(
+                    Icons.file_copy_outlined,
+                    size: 20.0,
+                  ),
+                ),
+                label: 'Review',
+                backgroundColor: Color.fromRGBO(36, 54, 101, 1.0),
+              ),
+              BottomNavigationBarItem(
+                icon: Container(
+                  margin: EdgeInsets.only(bottom: 7),
+                  child: Icon(
+                    Icons.settings,
+                    size: 20.0,
+                  ),
+                ),
+                label: 'Settings',
+                backgroundColor: Color.fromRGBO(36, 54, 101, 1.0),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final LandingPageController landingPageController =
+        Get.put(LandingPageController(), permanent: false);
+    return SafeArea(
+        child: Scaffold(
+      bottomNavigationBar:
+          buildBottomNavigationMenu(context, landingPageController),
+      body: Obx(() => IndexedStack(
+            index: landingPageController.tabIndex.value,
+            children: [
+              NotePage(),
+              ExplorePage(),
+              PlacesPage(),
+              SettingsPage(),
+            ],
+          )),
+    ));
+  }
+}
+
+// // class Controller extends GetxController {
+// //   int count = 0;
+// //   void increment() {
+// //     count++;
+// //     // use update method to update all count variables
+// //     update();
+// //   }
+// // }
+
+var notes = [
+  {
+    'title': 'title',
+    'description': 'description',
+    'image':
+        'https://1.bp.blogspot.com/-jlZlCg-8FAM/Xub_u8HTD1I/AAAAAAABZis/ZhUI05AZBEQpVinedZ6Xy-eIucmNuY2SQCNcBGAsYHQ/s1600/pose_pien_uruuru_man.png',
+  },
+  {
+    'title': 'shunta dayoooooo',
+    'description': 'description',
+    'image':
+        'https://1.bp.blogspot.com/-jlZlCg-8FAM/Xub_u8HTD1I/AAAAAAABZis/ZhUI05AZBEQpVinedZ6Xy-eIucmNuY2SQCNcBGAsYHQ/s1600/pose_pien_uruuru_man.png',
+  },
+  {
+    'title': 'third note dayooooooo',
+    'description': 'description',
+    'image':
+        'https://1.bp.blogspot.com/-jlZlCg-8FAM/Xub_u8HTD1I/AAAAAAABZis/ZhUI05AZBEQpVinedZ6Xy-eIucmNuY2SQCNcBGAsYHQ/s1600/pose_pien_uruuru_man.png',
+  },
+  {
+    'title': 'MVCモデル',
+    'description': 'description',
+    'image':
+        'https://1.bp.blogspot.com/-jlZlCg-8FAM/Xub_u8HTD1I/AAAAAAABZis/ZhUI05AZBEQpVinedZ6Xy-eIucmNuY2SQCNcBGAsYHQ/s1600/pose_pien_uruuru_man.png',
+  },
+  {
+    'title': '抽象化',
+    'description': 'description',
+    'image':
+        'https://1.bp.blogspot.com/-jlZlCg-8FAM/Xub_u8HTD1I/AAAAAAABZis/ZhUI05AZBEQpVinedZ6Xy-eIucmNuY2SQCNcBGAsYHQ/s1600/pose_pien_uruuru_man.png',
+  },
+  {
+    'title': 'OOP',
+    'description': 'description',
+    'image':
+        'https://1.bp.blogspot.com/-jlZlCg-8FAM/Xub_u8HTD1I/AAAAAAABZis/ZhUI05AZBEQpVinedZ6Xy-eIucmNuY2SQCNcBGAsYHQ/s1600/pose_pien_uruuru_man.png',
+  },
+  {
+    'title': 'キャメルケースとスネークケース',
+    'description': '_を使うのがスネークケースで最初の文字を大文字にするのがキャメルケーす',
+    'image':
+        'https://1.bp.blogspot.com/-jlZlCg-8FAM/Xub_u8HTD1I/AAAAAAABZis/ZhUI05AZBEQpVinedZ6Xy-eIucmNuY2SQCNcBGAsYHQ/s1600/pose_pien_uruuru_man.png',
+  },
+  {
+    'title': 'title',
+    'description': 'description',
+    'image':
+        'https://1.bp.blogspot.com/-jlZlCg-8FAM/Xub_u8HTD1I/AAAAAAABZis/ZhUI05AZBEQpVinedZ6Xy-eIucmNuY2SQCNcBGAsYHQ/s1600/pose_pien_uruuru_man.png',
+  },
+  {
+    'title': 'title',
+    'description': 'description',
+    'image':
+        'https://1.bp.blogspot.com/-jlZlCg-8FAM/Xub_u8HTD1I/AAAAAAABZis/ZhUI05AZBEQpVinedZ6Xy-eIucmNuY2SQCNcBGAsYHQ/s1600/pose_pien_uruuru_man.png',
+  },
+  {
+    'title': 'title',
+    'description': 'description',
+    'image':
+        'https://1.bp.blogspot.com/-jlZlCg-8FAM/Xub_u8HTD1I/AAAAAAABZis/ZhUI05AZBEQpVinedZ6Xy-eIucmNuY2SQCNcBGAsYHQ/s1600/pose_pien_uruuru_man.png',
+  },
+  {
+    'title': 'title',
+    'description': 'description',
+    'image':
+        'https://1.bp.blogspot.com/-jlZlCg-8FAM/Xub_u8HTD1I/AAAAAAABZis/ZhUI05AZBEQpVinedZ6Xy-eIucmNuY2SQCNcBGAsYHQ/s1600/pose_pien_uruuru_man.png',
+  },
+  {
+    'title': 'title',
+    'description': 'description',
+    'image':
+        'https://1.bp.blogspot.com/-jlZlCg-8FAM/Xub_u8HTD1I/AAAAAAABZis/ZhUI05AZBEQpVinedZ6Xy-eIucmNuY2SQCNcBGAsYHQ/s1600/pose_pien_uruuru_man.png',
+  },
+];
+
+class NotePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder(
-        // Initialize FlutterFire:
-        future: _initialization,
-        builder: (context, snapshot) {
-          // // Check for errors
-          // if (snapshot.hasError) {
-          //   return SomethingWentWrong();
-          // }
-
-          // // Once complete, show your application
-          // if (snapshot.connectionState == ConnectionState.done) {
-          //   return MyAwesomeApp();
-          // }
-
-          // // Otherwise, show something whilst waiting for initialization to complete
-          // return Loading();
-          List<Widget> children;
-          // if (snapshot.hasData) {
-          //   children = <Widget>[
-          //     const Icon(
-          //       Icons.check_circle_outline,
-          //       color: Colors.green,
-          //       size: 60,
-          //     ),
-          //     Padding(
-          //       padding: const EdgeInsets.only(top: 16),
-          //       child: Text('Result: ${snapshot.data}'),
-          //     )
-          //   ];
-          // }
-          if (snapshot.connectionState == ConnectionState.done) {
-            children = <Widget>[
-              const Icon(
-                Icons.connect_without_contact_outlined,
-                color: Colors.green,
-                size: 60,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: Text('Page: ${snapshot.data}'),
-              ),
-              RaisedButton(
-                color: Colors.blue,
-                textColor: Colors.black,
-                child: Container(
-                  height: 50.0,
-                  child: Center(
-                    child: Text(
-                      "Create Account",
-                      style:
-                          TextStyle(fontSize: 18.0, fontFamily: "Brand Bold"),
-                    ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {}, //newNote
+          child: Icon(Icons.add),
+        ),
+        appBar: AppBar(
+          title: Text('Note'),
+        ),
+        body: GridView.builder(
+            padding: EdgeInsets.all(10),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 0.618,
+                mainAxisSpacing: 16.8,
+                crossAxisSpacing: 10.0),
+            itemCount: notes.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Card(
+                  child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: NetworkImage("${notes[index]['image']}"),
+                      colorFilter: ColorFilter.mode(
+                          Colors.black.withOpacity(0.5), BlendMode.dstATop),
+                      fit: BoxFit.contain,
+                      alignment: Alignment.bottomCenter),
+                ),
+                child: InkWell(
+                  onTap: () {},
+                  child: Column(
+                    children: [
+                      // Text("${notes[index]['title']}"),
+                      // Text("${notes[index]['description']}"),
+                      // Image.network("${notes[index]['image']}")
+                      ListTile(
+                        title: Text(
+                          "${notes[index]['title']}",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 21),
+                        ),
+                        // subtitle: Text("${notes[index]['description']}"),
+                      )
+                    ],
                   ),
                 ),
-                onPressed: () {
-                  // registerNewUser(context);
-                  registerNewUser(context);
-                },
-              ),
-            ];
-          } else if (snapshot.hasError) {
-            children = <Widget>[
-              const Icon(
-                Icons.error_outline,
-                color: Colors.red,
-                size: 100,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20),
-                child: Text('Error: ${snapshot.error}'),
-              )
-            ];
-          } else {
-            children = const <Widget>[
-              SizedBox(
-                child: CircularProgressIndicator(),
-                width: 60,
-                height: 60,
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 16),
-                child: Text('Awaiting result...'),
-              )
-            ];
-          }
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: children,
-            ),
-          );
-        },
+              ));
+            })
+
+        // ListView.builder(
+        //   shrinkWrap: true,
+        //   itemCount: notes.length,
+        //   itemBuilder: (BuildContext context, int index) {
+        //     return Card(
+        //         child: InkWell(
+        //       onTap: () {},
+        //       child: Column(
+        //         children: [
+        //           // Text("${notes[index]['title']}"),
+        //           // Text("${notes[index]['description']}"),
+        //           // Image.network("${notes[index]['image']}")
+        //           ListTile(
+        //             title: Text("${notes[index]['title']}"),
+        //             subtitle: Text("${notes[index]['description']}"),
+        //           )
+        //         ],
+        //       ),
+        //     ));
+        //   },
+        // ),
+        );
+  }
+}
+
+class ExplorePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('ExplorePage'),
       ),
     );
   }
 }
 
-void registerNewUser(BuildContext context) async {
-  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-
-  DatabaseReference usersRef =
-      FirebaseDatabase.instance.reference().child("users");
-  UserCredential userCredential =
-      await FirebaseAuth.instance.signInAnonymously();
-  print(userCredential.user?.uid);
-  Map userDataMap = {
-    "wpm": 50,
-    "iteration": [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377]
-  };
-  usersRef.child(userCredential.user!.uid).set(userDataMap);
+class PlacesPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Review'),
+      ),
+    );
+  }
 }
-// ,,
+
+class SettingsPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('SettingsPage'),
+      ),
+    );
+  }
+}
+// class Home extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         // leading: IconButton(
+//         //   icon: Icon(Icons.add),
+//         //   onPressed: () {
+//         //     Get.snackbar("Hi", "I'm modern snackbar");
+//         //   },
+//         // ),
+//         title: Text("hello shunta"),
+//       ),
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             ElevatedButton(
+//               child: Text('ログインする'),
+//               onPressed: () {
+//                 Get.toNamed('/note');
+//               },
+//             ),
+//             // ElevatedButton(
+//             //   child: Text('Change locale to English'),
+//             //   onPressed: () {
+//             //     Get.updateLocale(Locale('en', 'UK'));
+//             //   },
+//             // ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// class Note extends GetView<ControllerX> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Note'),
+//       ),
+//       body: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           Text('~~のノート'),
+//           Text('~~のノート'),
+//           Text('~~のノート'),
+//           Text('~~のノート'),
+//           Text('~~のノート'),
+//         ],
+//       ),
+//       bottomNavigationBar: ,
+//     );
+//   }
+// }
+
+// class Swipe extends GetView<ControllerX> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       floatingActionButton: FloatingActionButton(onPressed: () {
+//         controller.incrementList();
+//       }),
+//       appBar: AppBar(
+//         title: Text("Third ${Get.arguments}"),
+//       ),
+//       body: Center(
+//           child: Obx(() => ListView.builder(
+//               itemCount: controller.list.length,
+//               itemBuilder: (context, index) {
+//                 return Text("${controller.list[index]}");
+//               }))),
+//     );
+//   }
+// }
+
+// class Scroll extends GetView<ControllerX> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       floatingActionButton: FloatingActionButton(onPressed: () {
+//         controller.incrementList();
+//       }),
+//       appBar: AppBar(
+//         title: Text("Third ${Get.arguments}"),
+//       ),
+//       body: Center(
+//           child: Obx(() => ListView.builder(
+//               itemCount: controller.list.length,
+//               itemBuilder: (context, index) {
+//                 return Text("${controller.list[index]}");
+//               }))),
+//     );
+//   }
+// }
+
+// class SampleBind extends Bindings {
+//   @override
+//   void dependencies() {
+//     Get.lazyPut<ControllerX>(() => ControllerX());
+//   }
+// }
+
+// class User {
+//   User({this.name = 'Name', this.age = 0});
+//   String name;
+//   int age;
+// }
+
+// class ControllerX extends GetxController {
+//   final count1 = 0.obs;
+//   final count2 = 0.obs;
+//   final list = [56].obs;
+//   final user = User().obs;
+
+//   updateUser() {
+//     user.update((value) {
+//       value!.name = 'Jose';
+//       value.age = 30;
+//     });
+//   }
+
+//   /// Once the controller has entered memory, onInit will be called.
+//   /// It is preferable to use onInit instead of class constructors or initState method.
+//   /// Use onInit to trigger initial events like API searches, listeners registration
+//   /// or Workers registration.
+//   /// Workers are event handlers, they do not modify the final result,
+//   /// but it allows you to listen to an event and trigger customized actions.
+//   /// Here is an outline of how you can use them:
+
+//   /// made this if you need cancel you worker
+//   late Worker _ever;
+
+//   @override
+//   onInit() {
+//     /// Called every time the variable $_ is changed
+//     _ever = ever(count1, (_) => print("$_ has been changed (ever)"));
+
+//     everAll([count1, count2], (_) => print("$_ has been changed (everAll)"));
+
+//     /// Called first time the variable $_ is changed
+//     once(count1, (_) => print("$_ was changed once (once)"));
+
+//     /// Anti DDos - Called every time the user stops typing for 1 second, for example.
+//     debounce(count1, (_) => print("debouce$_ (debounce)"),
+//         time: Duration(seconds: 1));
+
+//     /// Ignore all changes within 1 second.
+//     interval(count1, (_) => print("interval $_ (interval)"),
+//         time: Duration(seconds: 1));
+//   }
+
+//   int get sum => count1.value + count2.value;
+
+//   increment() => count1.value++;
+
+//   increment2() => count2.value++;
+
+//   disposeWorker() {
+//     _ever.dispose();
+//     // or _ever();
+//   }
+
+//   incrementList() => list.add(75);
+// }
+
+// class SizeTransitions extends CustomTransition {
+//   @override
+//   Widget buildTransition(
+//       BuildContext context,
+//       Curve? curve,
+//       Alignment? alignment,
+//       Animation<double> animation,
+//       Animation<double> secondaryAnimation,
+//       Widget child) {
+//     return Align(
+//       alignment: Alignment.center,
+//       child: SizeTransition(
+//         sizeFactor: CurvedAnimation(
+//           parent: animation,
+//           curve: curve!,
+//         ),
+//         child: child,
+//       ),
+//     );
+//   }
+// }
