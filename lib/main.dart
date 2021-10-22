@@ -168,7 +168,14 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-void main() {
+// outside
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(GetMaterialApp(
     // It is not mandatory to use named routes, but dynamic urls are interesting.
     initialRoute: '/home',
@@ -176,14 +183,13 @@ void main() {
     locale: Locale('pt', 'BR'),
     getPages: [
       //Simple GetPage
-      GetPage(name: '/home', page: () => LandingPage()),
+      GetPage(name: '/home', page: () => LandingPage(), binding: NoteBinding()),
       // GetPage with custom transitions and bindings
-      // GetPage(
-      //   name: '/note',
-      //   page: () => Note(),
-      //   customTransition: SizeTransitions(),
-      //   binding: SampleBind(),
-      // ),
+      GetPage(
+        name: '/note',
+        page: () => NotePage(),
+        // binding: NoteBinding(),
+      ),
       // // GetPage with default transitions
       // GetPage(
       //   name: '/swipe',
@@ -212,6 +218,11 @@ class LandingPageController extends GetxController {
   }
 
   @override
+  void onReady() {
+    super.onReady();
+  }
+
+  @override
   void dispose() {
     super.dispose();
   }
@@ -219,7 +230,7 @@ class LandingPageController extends GetxController {
 
 class LandingPage extends StatelessWidget {
   final TextStyle unselectedLabelStyle = TextStyle(
-      color: Colors.white.withOpacity(0.5),
+      color: Colors.white.withOpacity(0.9),
       fontWeight: FontWeight.w500,
       fontSize: 12);
 
@@ -324,7 +335,7 @@ class LandingPage extends StatelessWidget {
 // //   }
 // // }
 
-var notes = [
+var solidNotes = [
   {
     'title': 'title',
     'description': 'description',
@@ -399,12 +410,53 @@ var notes = [
   },
 ];
 
-class NotePage extends StatelessWidget {
+class NoteModel {
+  String? title;
+  String? description;
+  String? image;
+
+  NoteModel({this.title, this.description, this.image});
+
+  NoteModel.fromMap(DocumentSnapshot data) {
+    title = data["title"];
+    description = data["description"];
+    image = data["image"];
+  }
+}
+
+class NoteController extends GetxController {
+  FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+  late CollectionReference collectionReference;
+  RxList<NoteModel> notes = RxList<NoteModel>([]);
+
+  @override
+  void onInit() {
+    super.onInit();
+    collectionReference = firebaseFirestore.collection("notes");
+    notes.bindStream(getAllNotes());
+  }
+
+  Stream<List<NoteModel>> getAllNotes() => collectionReference.snapshots().map(
+      (query) => query.docs.map((item) => NoteModel.fromMap(item)).toList());
+}
+
+class NoteBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<NoteController>(
+      () => NoteController(),
+    );
+  }
+}
+
+class NotePage extends GetView<NoteController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: FloatingActionButton(
-          onPressed: () {}, //newNote
+          onPressed: () {
+            print(controller.notes.length);
+          }, //newNote
           child: Icon(Icons.add),
         ),
         appBar: AppBar(
@@ -417,13 +469,13 @@ class NotePage extends StatelessWidget {
                 childAspectRatio: 0.618,
                 mainAxisSpacing: 16.8,
                 crossAxisSpacing: 10.0),
-            itemCount: notes.length,
+            itemCount: controller.notes.length,
             itemBuilder: (BuildContext context, int index) {
               return Card(
                   child: Container(
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: NetworkImage("${notes[index]['image']}"),
+                      image: NetworkImage("${controller.notes[index].image}"),
                       colorFilter: ColorFilter.mode(
                           Colors.black.withOpacity(0.5), BlendMode.dstATop),
                       fit: BoxFit.contain,
@@ -438,7 +490,7 @@ class NotePage extends StatelessWidget {
                       // Image.network("${notes[index]['image']}")
                       ListTile(
                         title: Text(
-                          "${notes[index]['title']}",
+                          "${controller.notes[index].title}",
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 21),
                         ),
@@ -448,30 +500,7 @@ class NotePage extends StatelessWidget {
                   ),
                 ),
               ));
-            })
-
-        // ListView.builder(
-        //   shrinkWrap: true,
-        //   itemCount: notes.length,
-        //   itemBuilder: (BuildContext context, int index) {
-        //     return Card(
-        //         child: InkWell(
-        //       onTap: () {},
-        //       child: Column(
-        //         children: [
-        //           // Text("${notes[index]['title']}"),
-        //           // Text("${notes[index]['description']}"),
-        //           // Image.network("${notes[index]['image']}")
-        //           ListTile(
-        //             title: Text("${notes[index]['title']}"),
-        //             subtitle: Text("${notes[index]['description']}"),
-        //           )
-        //         ],
-        //       ),
-        //     ));
-        //   },
-        // ),
-        );
+            }));
   }
 }
 
