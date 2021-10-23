@@ -610,78 +610,100 @@ class NotePage extends GetView<NoteController> {
         child: Padding(
           padding:
               const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
-          child: Form(
-            key: controller.formKey,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${text} Note',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  TextFormField(
-                    decoration: InputDecoration(
-                      hintText: 'Name',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+          child: Column(
+            children: [
+              // IconButton(
+              //   onPressed: displayDeleteDialog(docId!),
+              //   icon: Icon(
+              //     Icons.delete_forever,
+              //     color: Colors.red,
+              //   ),
+              // ),
+              GestureDetector(
+                  onTap: () {
+                    Get.back();
+                    displayDeleteDialog(docId!);
+                  },
+                  child: Icon(
+                    Icons.delete_forever_outlined,
+                    color: Colors.red,
+                  )),
+              SizedBox(height: 30),
+              Form(
+                key: controller.formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${text} Note',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
                       ),
-                    ),
-                    controller: controller.nameController,
-                    validator: (value) {
-                      return controller.validateName(value!);
-                    },
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  TextFormField(
-                    keyboardType: TextInputType.multiline,
-                    decoration: InputDecoration(
-                      hintText: 'Description',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                      SizedBox(
+                        height: 8,
                       ),
-                    ),
-                    controller: controller.addressController,
-                    validator: (value) {
-                      return controller.validateAddress(value!);
-                    },
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  ConstrainedBox(
-                    constraints: BoxConstraints.tightFor(
-                        width: Get.context!.width, height: 45),
-                    child: ElevatedButton(
-                      child: Text(
-                        text!,
-                        style: TextStyle(color: Colors.black, fontSize: 16),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          hintText: 'Name',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        controller: controller.nameController,
+                        validator: (value) {
+                          return controller.validateName(value!);
+                        },
                       ),
-                      onPressed: () {
-                        controller.saveUpdateEmployee(
-                            controller.nameController.text,
-                            controller.addressController.text,
-                            docId!,
-                            addEditFlag!);
-                      },
-                    ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      TextFormField(
+                        keyboardType: TextInputType.multiline,
+                        decoration: InputDecoration(
+                          hintText: 'Description',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        controller: controller.addressController,
+                        validator: (value) {
+                          return controller.validateAddress(value!);
+                        },
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      ConstrainedBox(
+                        constraints: BoxConstraints.tightFor(
+                            width: Get.context!.width, height: 45),
+                        child: ElevatedButton(
+                          child: Text(
+                            text!,
+                            style: TextStyle(color: Colors.black, fontSize: 16),
+                          ),
+                          onPressed: () {
+                            controller.saveUpdateEmployee(
+                                controller.nameController.text,
+                                controller.addressController.text,
+                                docId!,
+                                addEditFlag!);
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  displayDeleteDialog(String docId) {
+  displayDeleteDialog(String? docId) {
     Get.defaultDialog(
       title: "Delete Employee",
       titleStyle: TextStyle(fontSize: 20),
@@ -691,7 +713,7 @@ class NotePage extends GetView<NoteController> {
       confirmTextColor: Colors.black,
       onCancel: () {},
       onConfirm: () {
-        controller.deleteData(docId);
+        controller.deleteData(docId!);
       },
     );
   }
