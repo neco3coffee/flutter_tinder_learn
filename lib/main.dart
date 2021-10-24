@@ -439,15 +439,20 @@ class NoteModel {
   String? title;
   String? description;
   String? image;
+  String? userId;
 
-  NoteModel({this.docId, this.title, this.description, this.image});
+  NoteModel(
+      {this.docId, this.title, this.description, this.image, this.userId});
 
   NoteModel.fromMap(DocumentSnapshot data) {
     docId = data.id;
     title = data["title"];
     description = data["description"];
     image = data["image"];
+    userId = data["userId"];
   }
+
+  static fromSnapshot(QueryDocumentSnapshot<Object?> e) {}
 }
 
 class NoteController extends GetxController {
@@ -455,6 +460,7 @@ class NoteController extends GetxController {
   late TextEditingController nameController, addressController;
 
   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+  FirebaseAuth auth = FirebaseAuth.instance;
   late CollectionReference notesReference;
   RxList<NoteModel> notes = RxList<NoteModel>([]);
 
@@ -464,7 +470,8 @@ class NoteController extends GetxController {
     nameController = TextEditingController();
     addressController = TextEditingController();
     notesReference = firebaseFirestore.collection("notes");
-    notes.bindStream(getAllNotes());
+    final userId = auth.currentUser!.uid;
+    notes.bindStream(getAllNotes(userId));
   }
 
   String? validateName(String value) {
@@ -493,7 +500,9 @@ class NoteController extends GetxController {
       notesReference.add({
         'title': title,
         'description': description,
-        'image': 'http://beepeers.com/assets/images/commerces/default-image.jpg'
+        'image':
+            'http://beepeers.com/assets/images/commerces/default-image.jpg',
+        'userId': auth.currentUser!.uid
       }).whenComplete(() {
         CustomFullScreenDialog.cancelDialog();
         clearEditingControllers();
@@ -546,8 +555,12 @@ class NoteController extends GetxController {
     addressController.dispose();
   }
 
-  Stream<List<NoteModel>> getAllNotes() => notesReference.snapshots().map(
-      (query) => query.docs.map((item) => NoteModel.fromMap(item)).toList());
+  Stream<List<NoteModel>> getAllNotes(String? userId) => notesReference
+      .where('userId', isEqualTo: userId)
+      .snapshots()
+      .map((query) => query.docs.map((note) =>
+          // noteのuserIdがauth.currentUser!.uidと一致したものだけを引っ張ってくる。
+          NoteModel.fromMap(note)).toList());
 
   void clearEditingControllers() {
     nameController.clear();
@@ -684,7 +697,7 @@ class NotePage extends GetView<NoteController> {
                     Icons.delete_forever_outlined,
                     color: Colors.red,
                   )),
-              SizedBox(height: 30),
+              SizedBox(height: 5),
               Form(
                 key: controller.formKey,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -729,7 +742,7 @@ class NotePage extends GetView<NoteController> {
                         },
                       ),
                       SizedBox(
-                        height: 8,
+                        height: 3,
                       ),
                       ConstrainedBox(
                         constraints: BoxConstraints.tightFor(
