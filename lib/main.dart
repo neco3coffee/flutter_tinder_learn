@@ -9,14 +9,14 @@
 // void main() async {
 //   WidgetsFlutterBinding.ensureInitialized();
 //   await Firebase.initializeApp();
-//   // final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+//   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
-//   // DatabaseReference usersRef =
-//   //     FirebaseDatabase.instance.reference().child("users");
-//   // UserCredential userCredential =
-//   //     await FirebaseAuth.instance.signInAnonymously();
-//   // print(userCredential.user?.uid);
-//   // print(firebaseAuth.app.hashCode);
+//   DatabaseReference usersRef =
+//       FirebaseDatabase.instance.reference().child("users");
+//   UserCredential userCredential =
+//       await FirebaseAuth.instance.signInAnonymously();
+//   print(userCredential.user?.uid);
+//   print(firebaseAuth.app.hashCode);
 //   runApp(MaterialApp(home: App()));
 // }
 
@@ -171,11 +171,25 @@ import 'package:get/get.dart';
 // outside
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  FirebaseAuth auth = FirebaseAuth.instance;
+  auth.authStateChanges().listen((User? user) {
+    if (user == null) {
+      print('User is currently signed out!');
+    } else {
+      print('User is signed in!');
+    }
+  });
+
+  UserCredential userCredential =
+      await FirebaseAuth.instance.signInAnonymously();
+  print(userCredential.user?.uid);
+
   runApp(GetMaterialApp(
     // It is not mandatory to use named routes, but dynamic urls are interesting.
     initialRoute: '/home',
