@@ -174,21 +174,63 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter/services.dart';
 
+// model
+import './userModel.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  FirebaseAuth auth = FirebaseAuth.instance;
-  auth.authStateChanges().listen((User? user) {
-    if (user == null) {
-      print('User is currently signed out!');
-    } else {
-      print('User is signed in!');
-    }
-  });
+  // authentication-----------------------------
+  // FirebaseAuth auth = FirebaseAuth.instance;
+  // auth.authStateChanges().listen((User? user) {
+  //   if (user == null) {
+  //     print('User is currently signed out!');
+  //   } else {
+  //     print('User is signed in!');
+  //     // auth.instance.currentUser!.
+  //   }
+  // });
 
-  UserCredential userCredential =
-      await FirebaseAuth.instance.signInAnonymously();
-  print(userCredential.user?.uid);
+  // UserCredential userCredential =
+  //     await FirebaseAuth.instance.signInAnonymously();
+  // print(userCredential.user?.uid);
+
+  // late CollectionReference usersReference;
+  // FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+  // usersReference = firebaseFirestore.collection("users");
+  // usersReference.add({
+  //   'uid': userCredential.user?.uid,
+  //   'wpm': 40,
+  //   'iteration': [
+  //     0,
+  //     1,
+  //     2,
+  //     3,
+  //     5,
+  //     8,
+  //     13,
+  //     21,
+  //     34,
+  //     55,
+  //     89,
+  //     144,
+  //     233,
+  //     377,
+  //     610,
+  //     987,
+  //     1597,
+  //     2584,
+  //     4181,
+  //     6765,
+  //     10946
+  //   ]
+  // }).whenComplete(() {
+  //   print("user登録完了👍");
+  // }).catchError((error) {
+  //   print("user登録失敗❌");
+  // });
+
+  // -------------------------------authentication
 
   runApp(GetMaterialApp(
     // It is not mandatory to use named routes, but dynamic urls are interesting.
@@ -413,7 +455,7 @@ class NoteController extends GetxController {
   late TextEditingController nameController, addressController;
 
   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-  late CollectionReference collectionReference;
+  late CollectionReference notesReference;
   RxList<NoteModel> notes = RxList<NoteModel>([]);
 
   @override
@@ -421,7 +463,7 @@ class NoteController extends GetxController {
     super.onInit();
     nameController = TextEditingController();
     addressController = TextEditingController();
-    collectionReference = firebaseFirestore.collection("notes");
+    notesReference = firebaseFirestore.collection("notes");
     notes.bindStream(getAllNotes());
   }
 
@@ -448,7 +490,7 @@ class NoteController extends GetxController {
     formKey.currentState!.save();
     if (addEditFlag == 1) {
       CustomFullScreenDialog.showDialog();
-      collectionReference.add({
+      notesReference.add({
         'title': title,
         'description': description,
         'image': 'http://beepeers.com/assets/images/commerces/default-image.jpg'
@@ -472,7 +514,7 @@ class NoteController extends GetxController {
     } else if (addEditFlag == 2) {
       //update
       CustomFullScreenDialog.showDialog();
-      collectionReference.doc(docId).update(
+      notesReference.doc(docId).update(
           {'title': title, 'description': description}).whenComplete(() {
         CustomFullScreenDialog.cancelDialog();
         clearEditingControllers();
@@ -504,7 +546,7 @@ class NoteController extends GetxController {
     addressController.dispose();
   }
 
-  Stream<List<NoteModel>> getAllNotes() => collectionReference.snapshots().map(
+  Stream<List<NoteModel>> getAllNotes() => notesReference.snapshots().map(
       (query) => query.docs.map((item) => NoteModel.fromMap(item)).toList());
 
   void clearEditingControllers() {
@@ -514,7 +556,7 @@ class NoteController extends GetxController {
 
   void deleteData(String docId) {
     CustomFullScreenDialog.showDialog();
-    collectionReference.doc(docId).delete().whenComplete(() {
+    notesReference.doc(docId).delete().whenComplete(() {
       CustomFullScreenDialog.cancelDialog();
       Get.back();
       CustomSnackBar.showSnackBar(
