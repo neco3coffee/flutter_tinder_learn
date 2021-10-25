@@ -653,7 +653,8 @@ class NotePage extends GetView<NoteController> {
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 21),
                         ),
-                        // subtitle: Text("${notes[index]['description']}"),
+                        subtitle:
+                            Text("${controller.notes[index].description}"),
                       )
                     ],
                   ),
