@@ -322,7 +322,7 @@ class NoteController extends GetxController {
     return null;
   }
 
-  void saveUpdateEmployee(
+  void saveUpdateNote(
       String title, String description, String docId, int addEditFlag) {
     final isValid = formKey.currentState!.validate();
     if (!isValid) {
@@ -343,8 +343,8 @@ class NoteController extends GetxController {
         Get.back();
         CustomSnackBar.showSnackBar(
             context: Get.context,
-            title: "Employee Added",
-            message: "Employee added successfully",
+            title: "note Added",
+            message: "note added successfully",
             backgroundColor: Colors.green);
       }).catchError((error) {
         CustomFullScreenDialog.cancelDialog();
@@ -364,8 +364,8 @@ class NoteController extends GetxController {
         Get.back();
         CustomSnackBar.showSnackBar(
             context: Get.context,
-            title: "Employee Updated",
-            message: "Employee updated successfully",
+            title: "note Updated",
+            message: "note updated successfully",
             backgroundColor: Colors.green);
       }).catchError((error) {
         CustomFullScreenDialog.cancelDialog();
@@ -408,8 +408,8 @@ class NoteController extends GetxController {
       Get.back();
       CustomSnackBar.showSnackBar(
           context: Get.context,
-          title: "Employee Deleted",
-          message: "Employee deleted successfully",
+          title: "note Deleted",
+          message: "note deleted successfully",
           backgroundColor: Colors.green);
     }).catchError((error) {
       CustomFullScreenDialog.cancelDialog();
@@ -438,7 +438,7 @@ class NotePage extends GetView<NoteController> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           controller.clearEditingControllers();
-          _buildAddEditEmployeeView(text: 'ADD', addEditFlag: 1, docId: '');
+          _buildAddEditNoteView(text: 'ADD', addEditFlag: 1, docId: '');
         }, //newNote
         child: Icon(Icons.add),
       ),
@@ -471,7 +471,7 @@ class NotePage extends GetView<NoteController> {
                         controller.notes[index].title!;
                     controller.addressController.text =
                         controller.notes[index].description!;
-                    _buildAddEditEmployeeView(
+                    _buildAddEditNoteView(
                         text: 'UPDATE',
                         addEditFlag: 2,
                         docId: controller.notes[index].docId!);
@@ -498,7 +498,7 @@ class NotePage extends GetView<NoteController> {
     );
   }
 
-  _buildAddEditEmployeeView({String? text, int? addEditFlag, String? docId}) {
+  _buildAddEditNoteView({String? text, int? addEditFlag, String? docId}) {
     Get.bottomSheet(
       Container(
         decoration: BoxDecoration(
@@ -578,7 +578,7 @@ class NotePage extends GetView<NoteController> {
                             style: TextStyle(color: Colors.black, fontSize: 16),
                           ),
                           onPressed: () {
-                            controller.saveUpdateEmployee(
+                            controller.saveUpdateNote(
                                 controller.nameController.text,
                                 controller.addressController.text,
                                 docId!,
@@ -599,9 +599,9 @@ class NotePage extends GetView<NoteController> {
 
   displayDeleteDialog(String? docId) {
     Get.defaultDialog(
-      title: "Delete Employee",
+      title: "Delete note",
       titleStyle: TextStyle(fontSize: 20),
-      middleText: 'Are you sure to delete employee ?',
+      middleText: 'Are you sure to delete note ?',
       textCancel: "Cancel",
       textConfirm: "Confirm",
       confirmTextColor: Colors.black,
