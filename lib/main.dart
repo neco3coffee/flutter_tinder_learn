@@ -540,7 +540,8 @@ class NotePage extends GetView<NoteController> {
                       ),
                       TextFormField(
                         decoration: InputDecoration(
-                          hintText: 'Name',
+                          hintText: 'Title',
+                          labelText: 'タイトル',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -557,6 +558,7 @@ class NotePage extends GetView<NoteController> {
                         keyboardType: TextInputType.multiline,
                         decoration: InputDecoration(
                           hintText: 'Description',
+                          labelText: '説明文',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
