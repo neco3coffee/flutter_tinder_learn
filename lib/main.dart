@@ -332,10 +332,13 @@ class NoteController extends GetxController {
     if (addEditFlag == 1) {
       CustomFullScreenDialog.showDialog();
       notesReference.add({
+        'docId': docId,
         'title': title,
         'description': description,
         'image':
             'http://beepeers.com/assets/images/commerces/default-image.jpg',
+        'local_image_path': 'device_path',
+        'remote_image_path': 'firebase_storage_path',
         'userId': auth.currentUser!.uid
       }).whenComplete(() {
         CustomFullScreenDialog.cancelDialog();
@@ -357,8 +360,11 @@ class NoteController extends GetxController {
     } else if (addEditFlag == 2) {
       //update
       CustomFullScreenDialog.showDialog();
-      notesReference.doc(docId).update(
-          {'title': title, 'description': description}).whenComplete(() {
+      notesReference.doc(docId).update({
+        'title': title,
+        'description': description,
+        'docId': docId
+      }).whenComplete(() {
         CustomFullScreenDialog.cancelDialog();
         clearEditingControllers();
         Get.back();
@@ -438,7 +444,7 @@ class NotePage extends GetView<NoteController> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           controller.clearEditingControllers();
-          _buildAddEditNoteView(text: 'ADD', addEditFlag: 1, docId: '');
+          _buildAddEditNoteView(text: 'ADD', addEditFlag: 1, docId: "");
         }, //newNote
         child: Icon(Icons.add),
       ),
