@@ -116,8 +116,7 @@ https://twitter.com/neco3coffee
 - cloud_firestore
 - firebase_storage
 - story_view
-- image_editor_pro
-- image_picker
+- image_editor_pro(image_picker,screenshot,zoom_widget,
 - flutter_luban
 - dev-----
 - flutter_launcher_icons
