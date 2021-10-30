@@ -36,12 +36,15 @@ void main() async {
         page: () => LoginView(),
         binding: LoginBinding(),
       ),
-      GetPage(name: '/home', page: () => LandingPage(), binding: NoteBinding()),
-      // GetPage with custom transitions and bindings
       GetPage(
-        name: '/note',
-        page: () => NotePage(),
-        // binding: NoteBinding(),
+        name: '/home',
+        page: () => LandingPage(),
+        binding: AccountBinding(),
+      ),
+      GetPage(
+        name: '/account',
+        page: () => AccountView(),
+        binding: AccountBinding(),
       ),
     ],
   ));
@@ -198,6 +201,83 @@ class LoginBinding extends Bindings {
 
 // --------------------------------LoginView
 
+// AccountView--------------------------
+class AccountView extends GetView<AccountController> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('AccountPage'),
+      ),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints.tightFor(width: 120),
+          child: ElevatedButton(
+            child: Text(
+              "Logout",
+              style: TextStyle(fontSize: 16, color: Colors.black),
+            ),
+            onPressed: () {
+              controller.logout();
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AccountController extends GetxController {
+  // GoogleController googleController = Get.find<GoogleController>();
+  late GoogleSignIn googleSign;
+  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  // var isSignIn = true.obs;
+  late User user;
+  @override
+  void onInit() async {
+    super.onInit();
+    user = Get.arguments;
+  }
+
+  @override
+  void onReady() async {
+    googleSign = GoogleSignIn();
+    // ever(isSignIn, handleAuthStateChanged);
+    // isSignIn.value = await firebaseAuth.currentUser != null;
+    // firebaseAuth.authStateChanges().listen((event) {
+    //   isSignIn.value = event != null;
+    // });
+    super.onReady();
+  }
+
+  @override
+  void onClose() {}
+
+  void logout() async {
+    await googleSign.disconnect();
+    await firebaseAuth.signOut();
+    await Get.offAllNamed('/google_auth');
+  }
+
+  // void handleAuthStateChanged(isLoggedIn) {
+  //   if (isLoggedIn) {
+  //     Get.offAllNamed('/home', arguments: firebaseAuth.currentUser);
+  //   } else {
+  //     Get.offAllNamed('/login');
+  //   }
+  // }
+}
+
+class AccountBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.put<AccountController>(AccountController());
+    // Get.put<GoogleController>(GoogleController());
+  }
+}
+
+// ------------------------AccountView
+
 // CustomSnackBar--------------------------
 class CustomSnackBar {
   static void showSnackBar({
@@ -299,17 +379,17 @@ class LandingPage extends StatelessWidget {
             unselectedLabelStyle: unselectedLabelStyle,
             selectedLabelStyle: selectedLabelStyle,
             items: [
-              BottomNavigationBarItem(
-                icon: Container(
-                  margin: EdgeInsets.only(bottom: 7),
-                  child: Icon(
-                    Icons.note_add_outlined,
-                    size: 20.0,
-                  ),
-                ),
-                label: 'Note',
-                backgroundColor: Color.fromRGBO(36, 54, 101, 1.0),
-              ),
+              // BottomNavigationBarItem(
+              //   icon: Container(
+              //     margin: EdgeInsets.only(bottom: 7),
+              //     child: Icon(
+              //       Icons.note_add_outlined,
+              //       size: 20.0,
+              //     ),
+              //   ),
+              //   label: 'Note',
+              //   backgroundColor: Color.fromRGBO(36, 54, 101, 1.0),
+              // ),
               BottomNavigationBarItem(
                 icon: Container(
                   margin: EdgeInsets.only(bottom: 7),
@@ -361,10 +441,10 @@ class LandingPage extends StatelessWidget {
       body: Obx(() => IndexedStack(
             index: landingPageController.tabIndex.value,
             children: [
-              NotePage(),
+              // NotePage(),
               HomePage(),
               AddImagePage(),
-              ProfilePage(),
+              AccountView(),
             ],
           )),
     ));
@@ -741,17 +821,6 @@ class AddImagePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('AddImagePage'),
-      ),
-    );
-  }
-}
-
-class ProfilePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('ProfilePage'),
       ),
     );
   }
