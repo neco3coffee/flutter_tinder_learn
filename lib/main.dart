@@ -8,71 +8,34 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 // model
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  // authentication-----------------------------
-  // FirebaseAuth auth = FirebaseAuth.instance;
-  // auth.authStateChanges().listen((User? user) {
-  //   if (user == null) {
-  //     print('User is currently signed out!');
-  //   } else {
-  //     print('User is signed in!');
-  //     // auth.instance.currentUser!.
-  //   }
-  // });
-
-  UserCredential userCredential =
-      await FirebaseAuth.instance.signInAnonymously();
-  print(userCredential.user?.uid);
-
-  // late CollectionReference usersReference;
-  // FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-  // usersReference = firebaseFirestore.collection("users");
-  // usersReference.add({
-  //   'uid': userCredential.user?.uid,
-  //   'wpm': 40,
-  //   'iteration': [
-  //     0,
-  //     1,
-  //     2,
-  //     3,
-  //     5,
-  //     8,
-  //     13,
-  //     21,
-  //     34,
-  //     55,
-  //     89,
-  //     144,
-  //     233,
-  //     377,
-  //     610,
-  //     987,
-  //     1597,
-  //     2584,
-  //     4181,
-  //     6765,
-  //     10946
-  //   ]
-  // }).whenComplete(() {
-  //   print("user登録完了👍");
-  // }).catchError((error) {
-  //   print("user登録失敗❌");
-  // });
-
-  // -------------------------------authentication
-
+  // -------------------anonymous sign in--------------------
+  // UserCredential userCredential =
+  //     await FirebaseAuth.instance.signInAnonymously();
+  // print(userCredential.user?.uid);
+  // ---------------------------------------
   runApp(GetMaterialApp(
-    // It is not mandatory to use named routes, but dynamic urls are interesting.
-    initialRoute: '/home',
+    initialRoute: '/google_auth',
     defaultTransition: Transition.native,
     locale: Locale('pt', 'BR'),
     getPages: [
       //Simple GetPage
+      GetPage(
+        name: '/google_auth',
+        page: () => GoogleView(),
+        binding: GoogleBinding(),
+      ),
+      GetPage(
+        name: '/login',
+        page: () => LoginView(),
+        binding: LoginBinding(),
+      ),
       GetPage(name: '/home', page: () => LandingPage(), binding: NoteBinding()),
       // GetPage with custom transitions and bindings
       GetPage(
@@ -80,20 +43,160 @@ void main() async {
         page: () => NotePage(),
         // binding: NoteBinding(),
       ),
-      // // GetPage with default transitions
-      // GetPage(
-      //   name: '/swipe',
-      //   transition: Transition.cupertino,
-      //   page: () => Swipe(),
-      // ),
-      // GetPage(
-      //   name: '/scroll',
-      //   transition: Transition.cupertino,
-      //   page: () => Scroll(),
-      // ),
     ],
   ));
 }
+
+// GoogleAuth----------------
+// view
+class GoogleView extends GetView<GoogleController> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation(Colors.yellowAccent),
+        ),
+      ),
+    );
+  }
+}
+
+// controller
+class GoogleController extends GetxController {
+  late GoogleSignIn googleSign;
+  var isSignIn = false.obs;
+  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+
+  @override
+  void onInit() {
+    super.onInit();
+  }
+
+  @override
+  void onReady() async {
+    googleSign = GoogleSignIn();
+    ever(isSignIn, handleAuthStateChanged);
+    isSignIn.value = await firebaseAuth.currentUser != null;
+    firebaseAuth.authStateChanges().listen((event) {
+      isSignIn.value = event != null;
+    });
+
+    super.onReady();
+  }
+
+  @override
+  void onClose() {}
+
+  void handleAuthStateChanged(isLoggedIn) {
+    if (isLoggedIn) {
+      Get.offAllNamed('/home', arguments: firebaseAuth.currentUser);
+    } else {
+      Get.offAllNamed('/login');
+    }
+  }
+}
+
+// binding
+
+class GoogleBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.put<GoogleController>(GoogleController());
+  }
+}
+// ____________________________________________GoogleAUth
+
+// LoginView------------------------------
+// view
+class LoginView extends GetView<LoginController> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Image.asset(
+          //   "images/instantLearn.png",
+          // ),
+          SizedBox(
+            height: 20,
+          ),
+          Text(
+            "Google SignIn",
+            style: TextStyle(fontSize: 40, color: Colors.black),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Container(
+            margin: EdgeInsets.only(left: 16, right: 16),
+            child: ConstrainedBox(
+              constraints: BoxConstraints.tightFor(width: context.width),
+              child: ElevatedButton(
+                child: Text(
+                  "Sign In with Google",
+                  style: TextStyle(fontSize: 18, color: Colors.black),
+                ),
+                onPressed: () {
+                  controller.login();
+                },
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 16,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// controller
+class LoginController extends GetxController {
+  GoogleController googleController = Get.find<GoogleController>();
+  @override
+  void onInit() async {
+    super.onInit();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+  }
+
+  @override
+  void onClose() {}
+
+  void login() async {
+    CustomFullScreenDialog.showDialog();
+    GoogleSignInAccount? googleSignInAccount =
+        await googleController.googleSign.signIn();
+    if (googleSignInAccount == null) {
+      CustomFullScreenDialog.cancelDialog();
+    } else {
+      GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount.authentication;
+      OAuthCredential oAuthCredential = GoogleAuthProvider.credential(
+          accessToken: googleSignInAuthentication.accessToken,
+          idToken: googleSignInAuthentication.idToken);
+      await googleController.firebaseAuth.signInWithCredential(oAuthCredential);
+      CustomFullScreenDialog.cancelDialog();
+    }
+  }
+}
+
+// binding
+class LoginBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.put<LoginController>(LoginController());
+  }
+}
+
+// --------------------------------LoginView
 
 // CustomSnackBar--------------------------
 class CustomSnackBar {
@@ -211,33 +314,33 @@ class LandingPage extends StatelessWidget {
                 icon: Container(
                   margin: EdgeInsets.only(bottom: 7),
                   child: Icon(
-                    Icons.play_lesson_outlined,
+                    Icons.home,
                     size: 20.0,
                   ),
                 ),
-                label: 'Explore',
+                label: 'Home',
                 backgroundColor: Color.fromRGBO(36, 54, 101, 1.0),
               ),
               BottomNavigationBarItem(
                 icon: Container(
                   margin: EdgeInsets.only(bottom: 7),
                   child: Icon(
-                    Icons.file_copy_outlined,
+                    Icons.add_a_photo_outlined,
                     size: 20.0,
                   ),
                 ),
-                label: 'Review',
+                label: 'AddStory',
                 backgroundColor: Color.fromRGBO(36, 54, 101, 1.0),
               ),
               BottomNavigationBarItem(
                 icon: Container(
                   margin: EdgeInsets.only(bottom: 7),
                   child: Icon(
-                    Icons.settings,
+                    Icons.manage_accounts_outlined,
                     size: 20.0,
                   ),
                 ),
-                label: 'Settings',
+                label: 'Account',
                 backgroundColor: Color.fromRGBO(36, 54, 101, 1.0),
               ),
             ],
@@ -259,9 +362,9 @@ class LandingPage extends StatelessWidget {
             index: landingPageController.tabIndex.value,
             children: [
               NotePage(),
-              ExplorePage(),
-              PlacesPage(),
-              SettingsPage(),
+              HomePage(),
+              AddImagePage(),
+              ProfilePage(),
             ],
           )),
     ));
@@ -621,34 +724,34 @@ class NotePage extends GetView<NoteController> {
   }
 }
 
-class ExplorePage extends StatelessWidget {
+class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ExplorePage'),
+        title: Text('HomePage'),
       ),
     );
   }
 }
 
-class PlacesPage extends StatelessWidget {
+class AddImagePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Review'),
+        title: Text('AddImagePage'),
       ),
     );
   }
 }
 
-class SettingsPage extends StatelessWidget {
+class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('SettingsPage'),
+        title: Text('ProfilePage'),
       ),
     );
   }
