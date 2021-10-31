@@ -1,14 +1,22 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 // outside
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart' as firebase_core;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 // model
 
@@ -46,6 +54,11 @@ void main() async {
         page: () => AccountView(),
         binding: AccountBinding(),
       ),
+      GetPage(
+        name: '/add_image',
+        page: () => AddImageView(),
+        binding: AddImageBinding(),
+      ),
     ],
   ));
 }
@@ -57,10 +70,10 @@ class GoogleView extends GetView<GoogleController> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation(Colors.yellowAccent),
-        ),
-      ),
+          // child: CircularProgressIndicator(
+          //   valueColor: AlwaysStoppedAnimation(Colors.yellowAccent),
+          // ),
+          child: Text('pending')),
     );
   }
 }
@@ -160,6 +173,7 @@ class LoginView extends GetView<LoginController> {
 // controller
 class LoginController extends GetxController {
   GoogleController googleController = Get.find<GoogleController>();
+
   @override
   void onInit() async {
     super.onInit();
@@ -210,17 +224,33 @@ class AccountView extends GetView<AccountController> {
         title: Text('AccountPage'),
       ),
       body: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints.tightFor(width: 120),
-          child: ElevatedButton(
-            child: Text(
-              "Logout",
-              style: TextStyle(fontSize: 16, color: Colors.black),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircleAvatar(
+              radius: 70,
+              backgroundImage: NetworkImage(controller.user.photoURL!),
             ),
-            onPressed: () {
-              controller.logout();
-            },
-          ),
+            Text('Display Name : ${controller.user.displayName}'),
+            Text(
+              controller.user.email!,
+            ),
+            Text(
+              controller.user.uid,
+            ),
+            ConstrainedBox(
+              constraints: BoxConstraints.tightFor(width: 120),
+              child: ElevatedButton(
+                child: Text(
+                  "Logout",
+                  style: TextStyle(fontSize: 16, color: Colors.black),
+                ),
+                onPressed: () {
+                  controller.logout();
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -231,12 +261,27 @@ class AccountController extends GetxController {
   // GoogleController googleController = Get.find<GoogleController>();
   late GoogleSignIn googleSign;
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+
   // var isSignIn = true.obs;
   late User user;
   @override
   void onInit() async {
     super.onInit();
     user = Get.arguments;
+    if (users.doc(user.uid).isBlank!) {
+      users
+          .doc(user.uid)
+          .set({
+            'id': user.uid,
+            'name': user.displayName,
+            'email': user.email,
+          })
+          .then((value) => print("user added!"))
+          .catchError((error) => print("failed to add user : $error"));
+    } else {
+      print('already your account is stored on firestore');
+    }
   }
 
   @override
@@ -258,21 +303,14 @@ class AccountController extends GetxController {
     await firebaseAuth.signOut();
     await Get.offAllNamed('/google_auth');
   }
-
-  // void handleAuthStateChanged(isLoggedIn) {
-  //   if (isLoggedIn) {
-  //     Get.offAllNamed('/home', arguments: firebaseAuth.currentUser);
-  //   } else {
-  //     Get.offAllNamed('/login');
-  //   }
-  // }
 }
 
 class AccountBinding extends Bindings {
   @override
   void dependencies() {
     Get.put<AccountController>(AccountController());
-    // Get.put<GoogleController>(GoogleController());
+    Get.put<AddImageController>(AddImageController());
+    Get.lazyPut<GoogleController>(() => GoogleController());
   }
 }
 
@@ -443,7 +481,7 @@ class LandingPage extends StatelessWidget {
             children: [
               // NotePage(),
               HomePage(),
-              AddImagePage(),
+              AddImageView(),
               AccountView(),
             ],
           )),
@@ -815,13 +853,276 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class AddImagePage extends StatelessWidget {
+// AddImageView-------------------------
+class AddImageView extends GetView<AddImageController> {
   @override
   Widget build(BuildContext context) {
+    if (controller.imagePermanent != '') {
+      print(controller.imagePermanent);
+    } else {
+      print('yooooo');
+    }
     return Scaffold(
       appBar: AppBar(
-        title: Text('AddImagePage'),
+        title: Text('AddImageView'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // ConstrainedBox(
+            //   constraints: BoxConstraints.tightFor(width: 120),
+            //   child: ElevatedButton(
+            //     child: Text(
+            //       "showImageModal",
+            //       style: TextStyle(fontSize: 16, color: Colors.black),
+            //     ),
+            //     onPressed: () {
+            //       showImageSource(context);
+            //     },
+            //   ),
+            // ),
+            const Image(
+                width: 200,
+                height: 200,
+                image: NetworkImage(
+                    'https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-10-31%2023%3A56%3A36.281937?alt=media&token=4dd23aaa-2352-47be-9d23-5f0cd57af34d')),
+            ElevatedButton(
+              onPressed: () {
+                controller.getImage(ImageSource.gallery);
+                // controller.pickImage();
+              },
+              child: CircleAvatar(
+                radius: 70,
+                backgroundImage: AssetImage('assets/images/gallery.png'),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                controller.getImage(ImageSource.camera);
+                // controller.pickImage();
+              },
+              child: CircleAvatar(
+                radius: 70,
+                backgroundImage: AssetImage('assets/images/take_picture.png'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
+
+// ImageUploadProvider--------------
+class ImageUploadProvider extends GetConnect {
+  //Upload Image
+  Future<String> uploadImage(File file) async {
+    try {
+      final form = FormData({
+        'file': MultipartFile(file, filename: 'aa.jpg'),
+      });
+
+      final response = await post(
+          "http://192.168.43.236:81/ToDoApp/public/index.php/api/customerProfileImageUpload",
+          form);
+      if (response.status.hasError) {
+        return Future.error(response.body);
+      } else {
+        return response.body['result'];
+      }
+    } catch (exception) {
+      return Future.error(exception.toString());
+    }
+  }
+
+  Future<void> uploadFile(String filePath) async {
+    File file = File(filePath);
+
+    try {
+      await firebase_storage.FirebaseStorage.instance
+          .ref('uploads/file-to-upload.png')
+          .putFile(file);
+    } on firebase_core.FirebaseException catch (e) {
+      // e.g, e.code == 'canceled'
+      print(e.message);
+    }
+  }
+}
+
+//-------------- ImageUploadProvider
+class AddImageController extends GetxController {
+  var selectedImagePath = ''.obs;
+  var selectedImageSize = ''.obs;
+
+  // Crop code
+  var cropImagePath = ''.obs;
+  var cropImageSize = ''.obs;
+
+  // Compress code
+  var compressImagePath = ''.obs;
+  var compressImageSize = ''.obs;
+
+  final RxString? imagePermanent = ''.obs;
+
+  File? image;
+
+  // void pickImage() async {
+  //   final XFile? image =
+  //       await ImagePicker().pickImage(source: ImageSource.gallery);
+  //   if (image == null) return;
+
+  //   final imagePermanent = await saveImagePermanently(image.path);
+
+  //   // final imageTemporary = XFile(image.path);
+  //   // this.image = imageTemporary;
+  //   print(imagePermanent);
+  //   print(image.path);
+  //   showCompressedFile(image);
+  // }
+
+  Future<File> saveImagePermanently(String imagePath) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final name = basename(imagePath);
+    final image = File('${directory.path}/$name');
+
+    return File(imagePath).copy(image.path);
+  }
+
+  Future<void> uploadFile(String filePath) async {
+    File file = File(filePath);
+    DateTime now = DateTime.now();
+
+    try {
+      await firebase_storage.FirebaseStorage.instance
+          .ref('story_img/$now')
+          .putFile(file);
+      print('🔥urlだよおおおおおおおおおお');
+      await firebase_storage.FirebaseStorage.instance
+          .ref('story_img/$now')
+          .getDownloadURL()
+          .then((url) => print(url));
+
+      // return print('story_img uploaded');
+      Get.snackbar('Image Uploaded🎉', 'firebase storageに画像がアップロードされました！',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white);
+    } on firebase_core.FirebaseException catch (e) {
+      // e.g, e.code == 'canceled'
+      print(e.message);
+    }
+  }
+
+  void getImage(ImageSource imageSource) async {
+    final pickedFile = await ImagePicker().pickImage(source: imageSource);
+    if (pickedFile != null) {
+      selectedImagePath.value = pickedFile.path;
+      selectedImageSize.value =
+          ((File(selectedImagePath.value)).lengthSync() / 1024 / 1024)
+                  .toStringAsFixed(2) +
+              " Mb";
+
+      // Crop
+      final cropImageFile = await ImageCropper.cropImage(
+          sourcePath: selectedImagePath.value,
+          maxWidth: 512,
+          maxHeight: 512,
+          compressFormat: ImageCompressFormat.jpg);
+      cropImagePath.value = cropImageFile!.path;
+      cropImageSize.value =
+          ((File(cropImagePath.value)).lengthSync() / 1024 / 1024)
+                  .toStringAsFixed(2) +
+              " Mb";
+
+      // Compress
+
+      final dir = Directory.systemTemp;
+      final name = basename(cropImagePath.value);
+      final targetPath = dir.absolute.path + name;
+      var compressedFile = await FlutterImageCompress.compressAndGetFile(
+          cropImagePath.value, targetPath,
+          quality: 90);
+      compressImagePath.value = compressedFile!.path;
+      compressImageSize.value =
+          ((File(compressImagePath.value)).lengthSync() / 1024 / 1024)
+                  .toStringAsFixed(2) +
+              " Mb";
+
+      print(compressedFile);
+      final imagePermanent = await saveImagePermanently(compressedFile.path);
+      print('make permanent🔥');
+      print(imagePermanent);
+
+      uploadFile(imagePermanent.path);
+      // uploadImage(compressedFile);
+      // showCompressedFile(compressedFile);
+    } else {
+      Get.snackbar('Error', 'No image selected',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white);
+    }
+  }
+
+  void showCompressedFile(XFile? file) {
+    Get.dialog(Center(
+      child: Image.file(File(file!.path)), //Image.file(file),
+    ));
+  }
+
+  @override
+  void onInit() async {
+    super.onInit();
+
+    print('👀AddImageController onInit');
+  }
+
+  @override
+  void onReady() async {
+    print('👀AddImageController onReady');
+  }
+
+  @override
+  void onClose() {
+    print('👀AddImageController onClose');
+  }
+
+  // void logout() async {
+  //   await googleSign.disconnect();
+  //   await firebaseAuth.signOut();
+  //   await Get.offAllNamed('/google_auth');
+  // }
+}
+
+class AddImageBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.put<AddImageController>(AddImageController());
+    // Get.put<GoogleController>(GoogleController());
+  }
+}
+
+Future<dynamic> showImageSource(BuildContext context) async {
+  return showModalBottomSheet(
+      context: context,
+      builder: (context) => Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Icon(Icons.camera_alt),
+                title: Text('Camera'),
+                onTap: () => Get.toNamed('/account'),
+              ),
+              ListTile(
+                leading: Icon(Icons.image),
+                title: Text('Gallery'),
+                onTap: () => Get.toNamed('/home'),
+              ),
+            ],
+          ));
+}
+
+
+
+// ------------------------------AddImageView

@@ -51,9 +51,9 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "neco3coffee.flutter_tinder_learn"
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 30
-        versionCode 7  //flutterVersionCode.toInteger()
+        versionCode 8  //flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
     }
