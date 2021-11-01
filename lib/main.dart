@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:io' as io;
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -17,6 +18,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+
+import 'package:story_view/story_view.dart';
 
 // model
 
@@ -45,9 +48,14 @@ void main() async {
         binding: LoginBinding(),
       ),
       GetPage(
-        name: '/home',
+        name: '/root',
         page: () => LandingPage(),
         binding: AccountBinding(),
+      ),
+      GetPage(
+        name: '/home',
+        page: () => HomeView(),
+        binding: HomeBinding(),
       ),
       GetPage(
         name: '/account',
@@ -58,6 +66,11 @@ void main() async {
         name: '/add_image',
         page: () => AddImageView(),
         binding: AddImageBinding(),
+      ),
+      GetPage(
+        name: '/story',
+        page: () => MoreStories(),
+        // binding: StoryBinding(),
       ),
     ],
   ));
@@ -106,7 +119,7 @@ class GoogleController extends GetxController {
 
   void handleAuthStateChanged(isLoggedIn) {
     if (isLoggedIn) {
-      Get.offAllNamed('/home', arguments: firebaseAuth.currentUser);
+      Get.offAllNamed('/root', arguments: firebaseAuth.currentUser);
     } else {
       Get.offAllNamed('/login');
     }
@@ -310,6 +323,7 @@ class AccountBinding extends Bindings {
   void dependencies() {
     Get.put<AccountController>(AccountController());
     Get.put<AddImageController>(AddImageController());
+    Get.put<HomeController>(HomeController());
     Get.lazyPut<GoogleController>(() => GoogleController());
   }
 }
@@ -480,7 +494,7 @@ class LandingPage extends StatelessWidget {
             index: landingPageController.tabIndex.value,
             children: [
               // NotePage(),
-              HomePage(),
+              HomeView(),
               AddImageView(),
               AccountView(),
             ],
@@ -508,6 +522,32 @@ class NoteModel {
   }
 
   static fromSnapshot(QueryDocumentSnapshot<Object?> e) {}
+}
+
+class StoryModel {
+  String? docId;
+  String? label;
+  String? remotePath;
+  String? localPath;
+  int? viewCount;
+  DateTime? createdDay;
+
+  StoryModel(
+      {this.docId,
+      this.label,
+      this.remotePath,
+      this.localPath,
+      this.viewCount,
+      this.createdDay});
+
+  StoryModel.fromMap(DocumentSnapshot data) {
+    docId = data.id;
+    label = data['label'];
+    remotePath = data['remotePath'];
+    localPath = data['localPath'];
+    viewCount = data['viewCount'];
+    createdDay = data['createdDay'];
+  }
 }
 
 class NoteController extends GetxController {
@@ -619,9 +659,8 @@ class NoteController extends GetxController {
   Stream<List<NoteModel>> getAllNotes(String? userId) => notesReference
       .where('userId', isEqualTo: userId)
       .snapshots()
-      .map((query) => query.docs.map((note) =>
-          // noteのuserIdがauth.currentUser!.uidと一致したものだけを引っ張ってくる。
-          NoteModel.fromMap(note)).toList());
+      .map((query) =>
+          query.docs.map((note) => NoteModel.fromMap(note)).toList());
 
   void clearEditingControllers() {
     nameController.clear();
@@ -841,17 +880,395 @@ class NotePage extends GetView<NoteController> {
     );
   }
 }
+// HomeView-----------------------------------
 
-class HomePage extends StatelessWidget {
+class HomeView extends GetView<HomeController> {
+  // HomeController controller = Get.find();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('HomePage'),
-      ),
-    );
+        appBar: AppBar(
+          title: Text('HomeView'),
+        ),
+        body: Column(
+          children: [
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: <Widget>[
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(right: 20, left: 15, bottom: 10),
+                    child: Column(
+                      children: <Widget>[
+                        InkWell(
+                          onTap: () {
+                            Get.toNamed('/story');
+                          },
+                          child: Container(
+                            width: 65,
+                            height: 65,
+                            child: Stack(
+                              children: <Widget>[
+                                Container(
+                                  width: 65,
+                                  height: 65,
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      image: DecorationImage(
+                                          image: NetworkImage(
+                                              'https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2020%3A38%3A35.224805?alt=media&token=51d4f778-3f3e-4511-a55a-d5caf88b8778'),
+                                          fit: BoxFit.cover)),
+                                ),
+                                Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: Container(
+                                      width: 19,
+                                      height: 19,
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.white),
+                                      child: Icon(
+                                        Icons.add_circle,
+                                        color: Colors.pink,
+                                        size: 19,
+                                      ),
+                                    ))
+                              ],
+                            ),
+                          ),
+                        ),
+                        // SizedBox(
+                        //   height: 8,
+                        // ),
+                        // SizedBox(
+                        //   width: 70,
+                        //   child: Text(
+                        //     'shunta',
+                        //     overflow: TextOverflow.ellipsis,
+                        //     style: TextStyle(color: Colors.black),
+                        //   ),
+                        // )
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(right: 20, left: 15, bottom: 10),
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          width: 65,
+                          height: 65,
+                          child: Stack(
+                            children: <Widget>[
+                              Container(
+                                width: 65,
+                                height: 65,
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                        image: NetworkImage(
+                                            'https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2020%3A38%3A35.224805?alt=media&token=51d4f778-3f3e-4511-a55a-d5caf88b8778'),
+                                        fit: BoxFit.cover)),
+                              ),
+                              Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: Container(
+                                    width: 19,
+                                    height: 19,
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white),
+                                    child: Icon(
+                                      Icons.add_circle,
+                                      color: Colors.pink,
+                                      size: 19,
+                                    ),
+                                  ))
+                            ],
+                          ),
+                        ),
+                        // SizedBox(
+                        //   height: 8,
+                        // ),
+                        // SizedBox(
+                        //   width: 70,
+                        //   child: Text(
+                        //     'shunta',
+                        //     overflow: TextOverflow.ellipsis,
+                        //     style: TextStyle(color: Colors.black),
+                        //   ),
+                        // )
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(right: 20, left: 15, bottom: 10),
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          width: 65,
+                          height: 65,
+                          child: Stack(
+                            children: <Widget>[
+                              Container(
+                                width: 65,
+                                height: 65,
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                        image: NetworkImage(
+                                            'https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2020%3A38%3A35.224805?alt=media&token=51d4f778-3f3e-4511-a55a-d5caf88b8778'),
+                                        fit: BoxFit.cover)),
+                              ),
+                              Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: Container(
+                                    width: 19,
+                                    height: 19,
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white),
+                                    child: Icon(
+                                      Icons.add_circle,
+                                      color: Colors.pink,
+                                      size: 19,
+                                    ),
+                                  ))
+                            ],
+                          ),
+                        ),
+                        // SizedBox(
+                        //   height: 8,
+                        // ),
+                        // SizedBox(
+                        //   width: 70,
+                        //   child: Text(
+                        //     'shunta',
+                        //     overflow: TextOverflow.ellipsis,
+                        //     style: TextStyle(color: Colors.black),
+                        //   ),
+                        // )
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(right: 20, left: 15, bottom: 10),
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          width: 65,
+                          height: 65,
+                          child: Stack(
+                            children: <Widget>[
+                              Container(
+                                width: 65,
+                                height: 65,
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                        image: NetworkImage(
+                                            'https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2020%3A38%3A35.224805?alt=media&token=51d4f778-3f3e-4511-a55a-d5caf88b8778'),
+                                        fit: BoxFit.cover)),
+                              ),
+                              Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: Container(
+                                    width: 19,
+                                    height: 19,
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white),
+                                    child: Icon(
+                                      Icons.add_circle,
+                                      color: Colors.pink,
+                                      size: 19,
+                                    ),
+                                  ))
+                            ],
+                          ),
+                        ),
+                        // SizedBox(
+                        //   height: 8,
+                        // ),
+                        // SizedBox(
+                        //   width: 70,
+                        //   child: Text(
+                        //     'shunta',
+                        //     overflow: TextOverflow.ellipsis,
+                        //     style: TextStyle(color: Colors.black),
+                        //   ),
+                        // )
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(right: 20, left: 15, bottom: 10),
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          width: 65,
+                          height: 65,
+                          child: Stack(
+                            children: <Widget>[
+                              Container(
+                                width: 65,
+                                height: 65,
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                        image: NetworkImage(
+                                            'https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2020%3A38%3A35.224805?alt=media&token=51d4f778-3f3e-4511-a55a-d5caf88b8778'),
+                                        fit: BoxFit.cover)),
+                              ),
+                              Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: Container(
+                                    width: 19,
+                                    height: 19,
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white),
+                                    child: Icon(
+                                      Icons.add_circle,
+                                      color: Colors.pink,
+                                      size: 19,
+                                    ),
+                                  ))
+                            ],
+                          ),
+                        ),
+                        // SizedBox(
+                        //   height: 8,
+                        // ),
+                        // SizedBox(
+                        //   width: 70,
+                        //   child: Text(
+                        //     'shunta',
+                        //     overflow: TextOverflow.ellipsis,
+                        //     style: TextStyle(color: Colors.black),
+                        //   ),
+                        // )
+                      ],
+                    ),
+                  ),
+                  // Row(
+                  //   children: List.generate(
+                  //     stories.length,
+                  //     (index) {
+                  //       return StoryItem(
+                  //         img: stories[index]['img'],
+                  //         name: stories[index]['name'],
+                  //       );
+                  //     },
+                  //   ),
+                  // ),
+                ],
+              ),
+            ),
+            Text('👇にノートを表示するよ！')
+          ],
+        )
+
+        // body: Center(
+        //   child:
+        //       // Text('homeview')
+        //       // Obx(() => Text(controller.stories[0]['remotePath']))),
+        //       Obx(
+        //     () => ListView.builder(
+        //       itemCount: controller.stories.length,
+        //       itemBuilder: (BuildContext ctxt, int index) {
+        //         bool existLocal = controller.stories[index]['localPath'] != '';
+        //         if (existLocal) {
+        //           print('🏁ローカルpathからイメージを表示してるよ');
+        //           return Image.file(File(controller.stories[index]['localPath']));
+        //         } else {
+        //           print('🏁リモートpathからイメージを表示してるよ');
+        //           return Image.network(controller.stories[index]['remotePath']);
+        //         }
+        //       },
+        //     ),
+        //   ),
+        // ),
+        );
   }
 }
+
+class HomeController extends GetxController {
+  FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+  FirebaseAuth auth = FirebaseAuth.instance;
+  late CollectionReference storiesReference;
+  late List stories = [].obs;
+  late String name = 'shunta';
+
+  @override
+  void onInit() {
+    print('👀HomeController');
+    super.onInit();
+
+    late String userId = auth.currentUser!.uid;
+    storiesReference = firebaseFirestore
+        .collection("users")
+        .doc(userId)
+        .collection("storyList");
+
+    storiesReference.get().then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((story) {
+        print(story["remotePath"]);
+        stories.add(story.data());
+        print('storiesList can be used from HomeView Now🔥');
+        print(stories[0]);
+      });
+    });
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+  }
+
+  @override
+  void onClose() {}
+
+  // void deleteData(String docId) {
+  //   CustomFullScreenDialog.showDialog();
+  //   notesReference.doc(docId).delete().whenComplete(() {
+  //     CustomFullScreenDialog.cancelDialog();
+  //     Get.back();
+  //     CustomSnackBar.showSnackBar(
+  //         context: Get.context,
+  //         title: "note Deleted",
+  //         message: "note deleted successfully",
+  //         backgroundColor: Colors.green);
+  //   }).catchError((error) {
+  //     CustomFullScreenDialog.cancelDialog();
+  //     CustomSnackBar.showSnackBar(
+  //         context: Get.context,
+  //         title: "Error",
+  //         message: "Something went wrong",
+  //         backgroundColor: Colors.red);
+  //   });
+  // }
+}
+
+class HomeBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<HomeController>(() => HomeController());
+    // Get.put<GoogleController>(GoogleController());
+  }
+}
+
+// -----------------------------------HomeView
 
 // AddImageView-------------------------
 class AddImageView extends GetView<AddImageController> {
@@ -914,43 +1331,6 @@ class AddImageView extends GetView<AddImageController> {
   }
 }
 
-// ImageUploadProvider--------------
-class ImageUploadProvider extends GetConnect {
-  //Upload Image
-  Future<String> uploadImage(File file) async {
-    try {
-      final form = FormData({
-        'file': MultipartFile(file, filename: 'aa.jpg'),
-      });
-
-      final response = await post(
-          "http://192.168.43.236:81/ToDoApp/public/index.php/api/customerProfileImageUpload",
-          form);
-      if (response.status.hasError) {
-        return Future.error(response.body);
-      } else {
-        return response.body['result'];
-      }
-    } catch (exception) {
-      return Future.error(exception.toString());
-    }
-  }
-
-  Future<void> uploadFile(String filePath) async {
-    File file = File(filePath);
-
-    try {
-      await firebase_storage.FirebaseStorage.instance
-          .ref('uploads/file-to-upload.png')
-          .putFile(file);
-    } on firebase_core.FirebaseException catch (e) {
-      // e.g, e.code == 'canceled'
-      print(e.message);
-    }
-  }
-}
-
-//-------------- ImageUploadProvider
 class AddImageController extends GetxController {
   var selectedImagePath = ''.obs;
   var selectedImageSize = ''.obs;
@@ -992,6 +1372,12 @@ class AddImageController extends GetxController {
   Future<void> uploadFile(String filePath) async {
     File file = File(filePath);
     DateTime now = DateTime.now();
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    final currentUserId = await firebaseAuth.currentUser!.uid;
+    CollectionReference stories = FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUserId)
+        .collection('storyList');
 
     try {
       await firebase_storage.FirebaseStorage.instance
@@ -1001,7 +1387,17 @@ class AddImageController extends GetxController {
       await firebase_storage.FirebaseStorage.instance
           .ref('story_img/$now')
           .getDownloadURL()
-          .then((url) => print(url));
+          .then((url) => stories
+              .add({
+                'id': '',
+                'label': '',
+                'remotePath': url,
+                'localPath': filePath,
+                'viewCount': 0,
+                'createdDay': now,
+              })
+              .then((value) => print('story added to firestore'))
+              .catchError((error) => print('$error')));
 
       // return print('story_img uploaded');
       Get.snackbar('Image Uploaded🎉', 'firebase storageに画像がアップロードされました！',
@@ -1117,12 +1513,193 @@ Future<dynamic> showImageSource(BuildContext context) async {
               ListTile(
                 leading: Icon(Icons.image),
                 title: Text('Gallery'),
-                onTap: () => Get.toNamed('/home'),
+                onTap: () => Get.toNamed('/root'),
               ),
             ],
           ));
 }
 
-
-
 // ------------------------------AddImageView
+
+// StoryView----------------------------------
+
+// class StoryView extends GetView<StoryController> {
+//   // @override
+//   // void dispose() {
+//   //   controller.storyController.dispose();
+//   //   // super.dispose();
+//   // }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('StoryView'),
+//       ),
+//       // body: storyC.StoryView(
+//       //   storyItems: [
+//       //     storyC.StoryItem.text(
+//       //       title: "英語！！教科書９ぺーじ〜！",
+//       //       backgroundColor: Colors.blue,
+//       //     ),
+//       //     storyC.StoryItem.text(
+//       //       title: "Nice!\n\nTap to continue.",
+//       //       backgroundColor: Colors.red,
+//       //       textStyle: TextStyle(
+//       //         fontFamily: 'Dancing',
+//       //         fontSize: 40,
+//       //       ),
+//       //     ),
+//       //     // storyC.StoryItem.pageImage(
+//       //     //   url:
+//       //     //       "https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/eng1.jpg?alt=media&token=7a1b0866-58cc-4bf0-8013-16c0106deac2",
+//       //     //   caption: "Still sampling",
+//       //     //   controller: storyController,
+//       //     // ),
+//       //     // storyC.StoryItem.pageImage(
+//       //     //     url:
+//       //     //         "https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/eng2.jpg?alt=media&token=15a59884-64e7-4559-ab0d-5e090ff9913b",
+//       //     //     caption: "Working with gifs",
+//       //     //     controller: storyController),
+//       //     // storyC.StoryItem.pageImage(
+//       //     //   url:
+//       //     //       "https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/eng4.jpg?alt=media&token=04d999a9-81cc-422a-a082-0934aeb0c28d",
+//       //     //   caption: "Hello, from the other side",
+//       //     //   controller: storyController,
+//       //     // ),
+//       //     // storyC.StoryItem.pageImage(
+//       //     //   url:
+//       //     //       "https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/eng5.jpg?alt=media&token=fa46d1a4-cf85-4739-8ab5-92c47b476807",
+//       //     //   caption: "Hello, from the other side2",
+//       //     //   controller: storyController,
+//       //     // ),
+//       //   ],
+//       //   onStoryShow: (s) {
+//       //     print("Showing a story");
+//       //   },
+//       //   onComplete: () {
+//       //     print("Completed a cycle");
+//       //   },
+//       //   progressPosition: storyC.ProgressPosition.top,
+//       //   repeat: false,
+//       //   controller: storyC.StoryController(),
+//       // ),
+//       body: Center(
+//         child: Column(
+//           mainAxisSize: MainAxisSize.min,
+//           children: [
+//             Image(
+//               width: 200,
+//               height: 200,
+//               image: NetworkImage(
+//                   'https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-10-31%2023%3A56%3A36.281937?alt=media&token=4dd23aaa-2352-47be-9d23-5f0cd57af34d'),
+//             ),
+//             Text('storyView')
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// class StoryController extends GetxController {
+//   final sController = StoryController();
+//   @override
+//   void onInit() async {
+//     super.onInit();
+
+//     print('👀AddImageController onInit');
+//   }
+
+//   @override
+//   void onReady() async {
+//     print('👀AddImageController onReady');
+//   }
+
+//   @override
+//   void onClose() {
+//     print('👀AddImageController onClose');
+//   }
+// }
+
+// class StoryBinding extends Bindings {
+//   @override
+//   void dependencies() {
+//     Get.put<StoryController>(StoryController());
+//     // Get.put<GoogleController>(GoogleController());
+//   }
+// }
+// ----------------------------StoryView
+
+class MoreStories extends StatefulWidget {
+  @override
+  _MoreStoriesState createState() => _MoreStoriesState();
+}
+
+class _MoreStoriesState extends State<MoreStories> {
+  final storyController = StoryController();
+
+  @override
+  void dispose() {
+    storyController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("More"),
+      ),
+      body: StoryView(
+        storyItems: [
+          StoryItem.text(
+            title: "英語！！教科書９ぺーじ〜！",
+            backgroundColor: Colors.blue,
+          ),
+          StoryItem.text(
+            title: "Nice!\n\nTap to continue.",
+            backgroundColor: Colors.red,
+            textStyle: TextStyle(
+              fontFamily: 'Dancing',
+              fontSize: 40,
+            ),
+          ),
+          StoryItem.pageImage(
+            url:
+                "https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2012%3A06%3A44.385462?alt=media&token=7bcbc865-4c9a-46ac-b8be-16397b744b2a",
+            caption: "Still sampling",
+            controller: storyController,
+          ),
+          StoryItem.pageImage(
+            url:
+                "https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2012%3A06%3A44.385462?alt=media&token=7bcbc865-4c9a-46ac-b8be-16397b744b2a",
+            caption: "Still sampling",
+            controller: storyController,
+          ),
+          StoryItem.pageImage(
+            url:
+                "https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2012%3A06%3A44.385462?alt=media&token=7bcbc865-4c9a-46ac-b8be-16397b744b2a",
+            caption: "Still sampling",
+            controller: storyController,
+          ),
+          StoryItem.pageImage(
+            url:
+                "https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2012%3A06%3A44.385462?alt=media&token=7bcbc865-4c9a-46ac-b8be-16397b744b2a",
+            caption: "Still sampling",
+            controller: storyController,
+          ),
+        ],
+        onStoryShow: (s) {
+          print("Showing a story");
+        },
+        onComplete: () {
+          print("Completed a cycle");
+        },
+        progressPosition: ProgressPosition.top,
+        repeat: false,
+        controller: storyController,
+      ),
+    );
+  }
+}
