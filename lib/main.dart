@@ -31,6 +31,7 @@ void main() async {
   //     await FirebaseAuth.instance.signInAnonymously();
   // print(userCredential.user?.uid);
   // ---------------------------------------
+  FirebaseAuth auth = FirebaseAuth.instance;
   runApp(GetMaterialApp(
     initialRoute: '/google_auth',
     defaultTransition: Transition.native,
@@ -69,7 +70,7 @@ void main() async {
       ),
       GetPage(
         name: '/story',
-        page: () => MoreStories(),
+        page: () => MoreStories(auth.currentUser),
         // binding: StoryBinding(),
       ),
     ],
@@ -1632,12 +1633,42 @@ Future<dynamic> showImageSource(BuildContext context) async {
 // ----------------------------StoryView
 
 class MoreStories extends StatefulWidget {
+  late User? user;
+
+  MoreStories(this.user);
+
   @override
   _MoreStoriesState createState() => _MoreStoriesState();
 }
 
 class _MoreStoriesState extends State<MoreStories> {
   final storyController = StoryController();
+  var showStoryUrlList = [];
+
+  get storyListStream => null;
+  // FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+
+  //  FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+  // FirebaseAuth auth = FirebaseAuth.instance;
+  //  late CollectionReference storiesReference;
+  // late List stories = [];
+  // late String userId = auth.currentUser!.uid;
+  //   storiesRef = firebaseFirestore
+  //       .collection("users")
+  //       .doc(userId)
+  //       .collection("storyList");
+
+  @override
+  initState() {
+    super.initState();
+    // Add listeners to this class
+    // final Stream<QuerySnapshot> _storyListStream = FirebaseFirestore.instance
+    //     .collection('users')
+    //     .doc(widget.user!.uid)
+    //     .collection('storyList')
+    //     .orderBy('createdAt', descending: true)
+    //     .snapshots();
+  }
 
   @override
   void dispose() {
@@ -1648,58 +1679,107 @@ class _MoreStoriesState extends State<MoreStories> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("More"),
-      ),
-      body: StoryView(
-        storyItems: [
-          StoryItem.text(
-            title: "英語！！教科書９ぺーじ〜！",
-            backgroundColor: Colors.blue,
-          ),
-          StoryItem.text(
-            title: "Nice!\n\nTap to continue.",
-            backgroundColor: Colors.red,
-            textStyle: TextStyle(
-              fontFamily: 'Dancing',
-              fontSize: 40,
-            ),
-          ),
-          StoryItem.pageImage(
-            url:
-                "https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2012%3A06%3A44.385462?alt=media&token=7bcbc865-4c9a-46ac-b8be-16397b744b2a",
-            caption: "Still sampling",
-            controller: storyController,
-          ),
-          StoryItem.pageImage(
-            url:
-                "https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2012%3A06%3A44.385462?alt=media&token=7bcbc865-4c9a-46ac-b8be-16397b744b2a",
-            caption: "Still sampling",
-            controller: storyController,
-          ),
-          StoryItem.pageImage(
-            url:
-                "https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2012%3A06%3A44.385462?alt=media&token=7bcbc865-4c9a-46ac-b8be-16397b744b2a",
-            caption: "Still sampling",
-            controller: storyController,
-          ),
-          StoryItem.pageImage(
-            url:
-                "https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2012%3A06%3A44.385462?alt=media&token=7bcbc865-4c9a-46ac-b8be-16397b744b2a",
-            caption: "Still sampling",
-            controller: storyController,
-          ),
-        ],
-        onStoryShow: (s) {
-          print("Showing a story");
-        },
-        onComplete: () {
-          print("Completed a cycle");
-        },
-        progressPosition: ProgressPosition.top,
-        repeat: false,
-        controller: storyController,
-      ),
-    );
+        // appBar: AppBar(
+        //   title: Text(widget.user!.uid),
+        // ),
+        body: StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('users')
+                .doc(widget.user!.uid)
+                .collection('storyList')
+                .orderBy('createdDay', descending: true)
+                .snapshots(),
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasError) {
+                return Text('error:${snapshot.error}');
+              }
+
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                // ローディング
+                return const Center(
+                  child: CircularProgressIndicator(
+                    semanticsLabel: 'Linear progress indicator',
+                  ),
+                );
+              }
+
+              return ListView(
+                  children:
+                      snapshot.data!.docs.map((DocumentSnapshot document) {
+                Map<String, dynamic> data =
+                    document.data() as Map<String, dynamic>;
+                return ListTile(
+                  title: Text('${data}'),
+                );
+              }).toList());
+              //     snapshot.data!.docs.map((DocumentSnapshot document) {
+              //       Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+              //       showStoryUrlList.add(data['remotePath']);
+              //     });
+
+              //     return StoryView(
+              //       controller: storyController,
+              //       progressPosition: ProgressPosition.top,
+              //       repeat: false,
+              //       storyItems: [
+              //         StoryItem.pageImage(
+              //           controller: storyController,
+              //           url:
+              //               'https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2011%3A05%3A45.391304?alt=media&token=a1a90de7-cf2d-4cc7-ac2a-80e19177bf35',
+              //         ),
+              //         StoryItem.pageImage(
+              //           controller: storyController,
+              //           url:
+              //               'https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2011%3A05%3A45.391304?alt=media&token=a1a90de7-cf2d-4cc7-ac2a-80e19177bf35',
+              //         ),
+              //         StoryItem.pageImage(
+              //           controller: storyController,
+              //           url:
+              //               'https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2011%3A05%3A45.391304?alt=media&token=a1a90de7-cf2d-4cc7-ac2a-80e19177bf35',
+              //         )
+              //       ],
+              //     );
+              //   },
+              // )
+
+              // body: StoryView(
+              //   storyItems: [
+              //     StoryItem.text(
+              //       title: "英語！！教科書９ぺーじ〜！",
+              //       backgroundColor: Colors.blue,
+              //     ),
+              //     StoryItem.text(
+              //       title: "Nice!\n\nTap to continue.",
+              //       backgroundColor: Colors.red,
+              //       textStyle: TextStyle(
+              //         fontFamily: 'Dancing',
+              //         fontSize: 40,
+              //       ),
+              //     ),
+              // StoryItem.pageImage(
+              //   url:
+              //       "https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2012%3A06%3A44.385462?alt=media&token=7bcbc865-4c9a-46ac-b8be-16397b744b2a",
+              //   caption: "Still sampling",
+              //   controller: storyController,
+              // ),
+              //     StoryItem.pageImage(
+              //       url:
+              //           "https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2012%3A06%3A44.385462?alt=media&token=7bcbc865-4c9a-46ac-b8be-16397b744b2a",
+              //       caption: "Still sampling",
+              //       controller: storyController,
+              //     ),
+              //   ],
+              //   onStoryShow: (s) {
+              //     print("Showing a story");
+              //   },
+              //   onComplete: () {
+              //     print("Completed a cycle");
+              //   },
+              //   progressPosition: ProgressPosition.top,
+              //   repeat: false,
+              //   controller: storyController,
+              // ),
+            }));
   }
 }
