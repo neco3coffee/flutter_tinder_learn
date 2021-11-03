@@ -53,7 +53,7 @@ android {
         applicationId "neco3coffee.flutter_tinder_learn"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 8  //flutterVersionCode.toInteger()
+        versionCode 9  //flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
     }

@@ -35,7 +35,9 @@ void main() async {
   runApp(GetMaterialApp(
     initialRoute: '/google_auth',
     defaultTransition: Transition.native,
-    locale: Locale('pt', 'BR'),
+    theme: ThemeData(
+        primaryColor: Colors.lightGreen.shade200,
+        appBarTheme: AppBarTheme(color: Colors.lightGreen.shade200)),
     getPages: [
       //Simple GetPage
       GetPage(
@@ -242,23 +244,29 @@ class AccountView extends GetView<AccountController> {
           mainAxisSize: MainAxisSize.min,
           children: [
             CircleAvatar(
-              radius: 70,
+              radius: 50,
               backgroundImage: NetworkImage(controller.user.photoURL!),
             ),
-            Text('Display Name : ${controller.user.displayName}'),
-            Text(
-              controller.user.email!,
+            SizedBox(
+              height: 10,
             ),
             Text(
-              controller.user.uid,
+              '${controller.user.displayName}',
+              style: TextStyle(
+                fontSize: 30,
+              ),
+            ),
+            SizedBox(
+              height: 20,
             ),
             ConstrainedBox(
               constraints: BoxConstraints.tightFor(width: 120),
               child: ElevatedButton(
-                child: Text(
-                  "Logout",
-                  style: TextStyle(fontSize: 16, color: Colors.black),
-                ),
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all(Colors.lightGreen.shade400)),
+                child: Text("Logout",
+                    style: TextStyle(fontSize: 16, color: Colors.white)),
                 onPressed: () {
                   controller.logout();
                 },
@@ -426,7 +434,7 @@ class LandingPage extends StatelessWidget {
             showSelectedLabels: true,
             onTap: landingPageController.changeTabIndex,
             currentIndex: landingPageController.tabIndex.value,
-            backgroundColor: Color.fromRGBO(36, 54, 101, 1.0),
+            backgroundColor: Colors.lightGreen.shade200,
             unselectedItemColor: Colors.white.withOpacity(0.5),
             selectedItemColor: Colors.white,
             unselectedLabelStyle: unselectedLabelStyle,
@@ -530,7 +538,7 @@ class StoryModel {
   String? label;
   String? remotePath;
   String? localPath;
-  int? viewCount;
+  bool? shown;
   DateTime? createdDay;
 
   StoryModel(
@@ -538,7 +546,7 @@ class StoryModel {
       this.label,
       this.remotePath,
       this.localPath,
-      this.viewCount,
+      this.shown,
       this.createdDay});
 
   StoryModel.fromMap(DocumentSnapshot data) {
@@ -546,7 +554,7 @@ class StoryModel {
     label = data['label'];
     remotePath = data['remotePath'];
     localPath = data['localPath'];
-    viewCount = data['viewCount'];
+    shown = data['shown'];
     createdDay = data['createdDay'];
   }
 }
@@ -889,10 +897,13 @@ class HomeView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('HomeView'),
+          title: Text('👀instantLearn✌️'),
         ),
         body: Column(
           children: [
+            SizedBox(
+              height: 20,
+            ),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -904,7 +915,7 @@ class HomeView extends GetView<HomeController> {
                       children: <Widget>[
                         InkWell(
                           onTap: () {
-                            Get.toNamed('/story');
+                            Get.toNamed('/add_image');
                           },
                           child: Container(
                             width: 65,
@@ -918,7 +929,7 @@ class HomeView extends GetView<HomeController> {
                                       shape: BoxShape.circle,
                                       image: DecorationImage(
                                           image: NetworkImage(
-                                              'https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2020%3A38%3A35.224805?alt=media&token=51d4f778-3f3e-4511-a55a-d5caf88b8778'),
+                                              '${controller.auth.currentUser!.photoURL}'),
                                           fit: BoxFit.cover)),
                                 ),
                                 Positioned(
@@ -970,39 +981,13 @@ class HomeView extends GetView<HomeController> {
                                 decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     image: DecorationImage(
-                                        image: NetworkImage(
-                                            'https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2020%3A38%3A35.224805?alt=media&token=51d4f778-3f3e-4511-a55a-d5caf88b8778'),
+                                        image: AssetImage(
+                                            'assets/images/instantLearn.png'),
                                         fit: BoxFit.cover)),
                               ),
-                              Positioned(
-                                  bottom: 0,
-                                  right: 0,
-                                  child: Container(
-                                    width: 19,
-                                    height: 19,
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.white),
-                                    child: Icon(
-                                      Icons.add_circle,
-                                      color: Colors.pink,
-                                      size: 19,
-                                    ),
-                                  ))
                             ],
                           ),
                         ),
-                        // SizedBox(
-                        //   height: 8,
-                        // ),
-                        // SizedBox(
-                        //   width: 70,
-                        //   child: Text(
-                        //     'shunta',
-                        //     overflow: TextOverflow.ellipsis,
-                        //     style: TextStyle(color: Colors.black),
-                        //   ),
-                        // )
                       ],
                     ),
                   ),
@@ -1022,39 +1007,13 @@ class HomeView extends GetView<HomeController> {
                                 decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     image: DecorationImage(
-                                        image: NetworkImage(
-                                            'https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2020%3A38%3A35.224805?alt=media&token=51d4f778-3f3e-4511-a55a-d5caf88b8778'),
+                                        image: AssetImage(
+                                            'assets/images/instantLearn.png'),
                                         fit: BoxFit.cover)),
                               ),
-                              Positioned(
-                                  bottom: 0,
-                                  right: 0,
-                                  child: Container(
-                                    width: 19,
-                                    height: 19,
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.white),
-                                    child: Icon(
-                                      Icons.add_circle,
-                                      color: Colors.pink,
-                                      size: 19,
-                                    ),
-                                  ))
                             ],
                           ),
                         ),
-                        // SizedBox(
-                        //   height: 8,
-                        // ),
-                        // SizedBox(
-                        //   width: 70,
-                        //   child: Text(
-                        //     'shunta',
-                        //     overflow: TextOverflow.ellipsis,
-                        //     style: TextStyle(color: Colors.black),
-                        //   ),
-                        // )
                       ],
                     ),
                   ),
@@ -1074,39 +1033,13 @@ class HomeView extends GetView<HomeController> {
                                 decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     image: DecorationImage(
-                                        image: NetworkImage(
-                                            'https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2020%3A38%3A35.224805?alt=media&token=51d4f778-3f3e-4511-a55a-d5caf88b8778'),
+                                        image: AssetImage(
+                                            'assets/images/instantLearn.png'),
                                         fit: BoxFit.cover)),
                               ),
-                              Positioned(
-                                  bottom: 0,
-                                  right: 0,
-                                  child: Container(
-                                    width: 19,
-                                    height: 19,
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.white),
-                                    child: Icon(
-                                      Icons.add_circle,
-                                      color: Colors.pink,
-                                      size: 19,
-                                    ),
-                                  ))
                             ],
                           ),
                         ),
-                        // SizedBox(
-                        //   height: 8,
-                        // ),
-                        // SizedBox(
-                        //   width: 70,
-                        //   child: Text(
-                        //     'shunta',
-                        //     overflow: TextOverflow.ellipsis,
-                        //     style: TextStyle(color: Colors.black),
-                        //   ),
-                        // )
                       ],
                     ),
                   ),
@@ -1126,57 +1059,69 @@ class HomeView extends GetView<HomeController> {
                                 decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     image: DecorationImage(
-                                        image: NetworkImage(
-                                            'https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2020%3A38%3A35.224805?alt=media&token=51d4f778-3f3e-4511-a55a-d5caf88b8778'),
+                                        image: AssetImage(
+                                            'assets/images/instantLearn.png'),
                                         fit: BoxFit.cover)),
                               ),
-                              Positioned(
-                                  bottom: 0,
-                                  right: 0,
-                                  child: Container(
-                                    width: 19,
-                                    height: 19,
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.white),
-                                    child: Icon(
-                                      Icons.add_circle,
-                                      color: Colors.pink,
-                                      size: 19,
-                                    ),
-                                  ))
                             ],
                           ),
                         ),
-                        // SizedBox(
-                        //   height: 8,
-                        // ),
-                        // SizedBox(
-                        //   width: 70,
-                        //   child: Text(
-                        //     'shunta',
-                        //     overflow: TextOverflow.ellipsis,
-                        //     style: TextStyle(color: Colors.black),
-                        //   ),
-                        // )
                       ],
                     ),
                   ),
-                  // Row(
-                  //   children: List.generate(
-                  //     stories.length,
-                  //     (index) {
-                  //       return StoryItem(
-                  //         img: stories[index]['img'],
-                  //         name: stories[index]['name'],
-                  //       );
-                  //     },
-                  //   ),
-                  // ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(right: 20, left: 15, bottom: 10),
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          width: 65,
+                          height: 65,
+                          child: Stack(
+                            children: <Widget>[
+                              Container(
+                                width: 65,
+                                height: 65,
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                        image: AssetImage(
+                                            'assets/images/instantLearn.png'),
+                                        fit: BoxFit.cover)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-            Text('👇にノートを表示するよ！')
+            SizedBox(
+              height: 100,
+            ),
+            Center(
+              child: InkWell(
+                onTap: () {
+                  Get.toNamed('/story');
+                },
+                child: Container(
+                  width: 150,
+                  height: 150,
+                  child: Container(
+                    width: 65,
+                    height: 65,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                            image: NetworkImage(
+                                '${controller.auth.currentUser!.photoURL}'),
+                            fit: BoxFit.cover)),
+                  ),
+                ),
+              ),
+            ),
           ],
         )
 
@@ -1285,8 +1230,8 @@ class AddImageView extends GetView<AddImageController> {
         title: Text('AddImageView'),
       ),
       body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // ConstrainedBox(
             //   constraints: BoxConstraints.tightFor(width: 120),
@@ -1300,30 +1245,44 @@ class AddImageView extends GetView<AddImageController> {
             //     },
             //   ),
             // ),
-            const Image(
-                width: 200,
-                height: 200,
-                image: NetworkImage(
-                    'https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-10-31%2023%3A56%3A36.281937?alt=media&token=4dd23aaa-2352-47be-9d23-5f0cd57af34d')),
-            ElevatedButton(
+
+            // ElevatedButton(
+            //   style: ButtonStyle(
+            //       backgroundColor: MaterialStateProperty.all(Colors.white)),
+            //   onPressed: () {
+            //     controller.getImage(ImageSource.gallery);
+            //     // controller.pickImage();
+            //   },
+            //   child: CircleAvatar(
+            //     radius: 70,
+            //     backgroundImage: AssetImage('assets/images/gallery.png'),
+            //     backgroundColor: Colors.lightGreen.shade200,
+            //   ),
+            // ),
+            IconButton(
+              icon: Icon(
+                Icons.image,
+              ),
+              iconSize: 90,
+              color: Colors.lightGreen.shade400,
+              splashColor: Colors.lightGreen.shade100,
               onPressed: () {
                 controller.getImage(ImageSource.gallery);
-                // controller.pickImage();
               },
-              child: CircleAvatar(
-                radius: 70,
-                backgroundImage: AssetImage('assets/images/gallery.png'),
-              ),
             ),
-            ElevatedButton(
+            SizedBox(
+              width: 30,
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.camera_alt,
+              ),
+              iconSize: 90,
+              color: Colors.lightGreen.shade400,
+              splashColor: Colors.lightGreen.shade100,
               onPressed: () {
                 controller.getImage(ImageSource.camera);
-                // controller.pickImage();
               },
-              child: CircleAvatar(
-                radius: 70,
-                backgroundImage: AssetImage('assets/images/take_picture.png'),
-              ),
             ),
           ],
         ),
@@ -1394,15 +1353,15 @@ class AddImageController extends GetxController {
                 'label': '',
                 'remotePath': url,
                 'localPath': filePath,
-                'viewCount': 0,
+                'shown': false,
                 'createdDay': now,
               })
               .then((value) => print('story added to firestore'))
               .catchError((error) => print('$error')));
 
       // return print('story_img uploaded');
-      Get.snackbar('Image Uploaded🎉', 'firebase storageに画像がアップロードされました！',
-          snackPosition: SnackPosition.BOTTOM,
+      Get.snackbar('🥳your story uploaded🎉', 'storyがアップロードされました！',
+          snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.green,
           colorText: Colors.white);
     } on firebase_core.FirebaseException catch (e) {
@@ -1456,7 +1415,7 @@ class AddImageController extends GetxController {
       // showCompressedFile(compressedFile);
     } else {
       Get.snackbar('Error', 'No image selected',
-          snackPosition: SnackPosition.BOTTOM,
+          snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.red,
           colorText: Colors.white);
     }
@@ -1645,7 +1604,6 @@ class _MoreStoriesState extends State<MoreStories> {
   final storyController = StoryController();
   var showStoryUrlList = [];
 
-  get storyListStream => null;
   // FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
   //  FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
@@ -1661,13 +1619,6 @@ class _MoreStoriesState extends State<MoreStories> {
   @override
   initState() {
     super.initState();
-    // Add listeners to this class
-    // final Stream<QuerySnapshot> _storyListStream = FirebaseFirestore.instance
-    //     .collection('users')
-    //     .doc(widget.user!.uid)
-    //     .collection('storyList')
-    //     .orderBy('createdAt', descending: true)
-    //     .snapshots();
   }
 
   @override
@@ -1679,107 +1630,79 @@ class _MoreStoriesState extends State<MoreStories> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // appBar: AppBar(
-        //   title: Text(widget.user!.uid),
-        // ),
-        body: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('users')
-                .doc(widget.user!.uid)
-                .collection('storyList')
-                .orderBy('createdDay', descending: true)
-                .snapshots(),
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if (snapshot.hasError) {
-                return Text('error:${snapshot.error}');
-              }
+      // appBar: AppBar(
+      //   title: Text(widget.user!.uid),
+      // ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(widget.user!.uid)
+            .collection('storyList')
+            .orderBy('createdDay', descending: false)
+            .snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Text('error:${snapshot.error}');
+          }
 
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                // ローディング
-                return const Center(
-                  child: CircularProgressIndicator(
-                    semanticsLabel: 'Linear progress indicator',
-                  ),
-                );
-              }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // ローディング
+            return const Center(
+              child: CircularProgressIndicator(
+                semanticsLabel: 'Linear progress indicator',
+              ),
+            );
+          }
 
-              return ListView(
-                  children:
-                      snapshot.data!.docs.map((DocumentSnapshot document) {
-                Map<String, dynamic> data =
-                    document.data() as Map<String, dynamic>;
-                return ListTile(
-                  title: Text('${data}'),
-                );
-              }).toList());
-              //     snapshot.data!.docs.map((DocumentSnapshot document) {
-              //       Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-              //       showStoryUrlList.add(data['remotePath']);
-              //     });
+          // return ListView(
+          //     children: snapshot.data!.docs.map((DocumentSnapshot document) {
+          //   Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+          //   return ListTile(
+          //     title: Text("${data['remotePath']}"),
+          //   );
+          // }).toList());
 
-              //     return StoryView(
-              //       controller: storyController,
-              //       progressPosition: ProgressPosition.top,
-              //       repeat: false,
-              //       storyItems: [
-              //         StoryItem.pageImage(
-              //           controller: storyController,
-              //           url:
-              //               'https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2011%3A05%3A45.391304?alt=media&token=a1a90de7-cf2d-4cc7-ac2a-80e19177bf35',
-              //         ),
-              //         StoryItem.pageImage(
-              //           controller: storyController,
-              //           url:
-              //               'https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2011%3A05%3A45.391304?alt=media&token=a1a90de7-cf2d-4cc7-ac2a-80e19177bf35',
-              //         ),
-              //         StoryItem.pageImage(
-              //           controller: storyController,
-              //           url:
-              //               'https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2011%3A05%3A45.391304?alt=media&token=a1a90de7-cf2d-4cc7-ac2a-80e19177bf35',
-              //         )
-              //       ],
-              //     );
-              //   },
-              // )
+          // return ListView.builder(itemCount: , itemBuilder: (context, index) {
+          // snapshot.data!.docs.map((DocumentSnapshot document) {
+          //   Map<String, dynamic> data =
+          //       document.data() as Map<String, dynamic>;
+          // print(data);
+          // print('🐞🔥🐞')
 
-              // body: StoryView(
-              //   storyItems: [
-              //     StoryItem.text(
-              //       title: "英語！！教科書９ぺーじ〜！",
-              //       backgroundColor: Colors.blue,
-              //     ),
-              //     StoryItem.text(
-              //       title: "Nice!\n\nTap to continue.",
-              //       backgroundColor: Colors.red,
-              //       textStyle: TextStyle(
-              //         fontFamily: 'Dancing',
-              //         fontSize: 40,
-              //       ),
-              //     ),
-              // StoryItem.pageImage(
-              //   url:
-              //       "https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2012%3A06%3A44.385462?alt=media&token=7bcbc865-4c9a-46ac-b8be-16397b744b2a",
-              //   caption: "Still sampling",
-              //   controller: storyController,
-              // ),
-              //     StoryItem.pageImage(
-              //       url:
-              //           "https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-01%2012%3A06%3A44.385462?alt=media&token=7bcbc865-4c9a-46ac-b8be-16397b744b2a",
-              //       caption: "Still sampling",
-              //       controller: storyController,
-              //     ),
-              //   ],
-              //   onStoryShow: (s) {
-              //     print("Showing a story");
-              //   },
-              //   onComplete: () {
-              //     print("Completed a cycle");
-              //   },
-              //   progressPosition: ProgressPosition.top,
-              //   repeat: false,
-              //   controller: storyController,
-              // ),
-            }));
+          // });
+          //   return StoryView(storyItems: [
+          //     StoryItem.pageImage(
+          //         controller: storyController,
+          //         url:'https://firebasestorage.googleapis.com/v0/b/flutter-tinder-learn.appspot.com/o/story_img%2F2021-11-02%2013%3A50%3A34.801252?alt=media&token=695f70a9-95ae-4ddb-819a-4890899ad3e5'),
+          //   ],
+          //   controller: storyController,
+          //   progressPosition: ProgressPosition.top,
+          //   repeat: false,
+          //   );
+          // });
+
+          if (snapshot.data!.docs.isEmpty) {
+            return const Center(
+                child: Center(
+              child: Text('storyがありません！'),
+            ));
+          } else {
+            return StoryView(
+                controller: storyController,
+                progressPosition: ProgressPosition.top,
+                repeat: false,
+                storyItems:
+                    snapshot.data!.docs.map((DocumentSnapshot document) {
+                  Map<String, dynamic> data =
+                      document.data() as Map<String, dynamic>;
+                  print(
+                      "🏃‍♂️🏃‍♂️🏃‍♂️🏃‍♂️🏃‍♂️🏃‍♂️🏃‍♂️🏃‍♂️🏃‍♂️ ${data['createdDay']} 🏃‍♂️🏃‍♂️🏃‍♂️🏃‍♂️🏃‍♂️🏃‍♂️🏃‍♂️🏃‍♂️🏃‍♂️");
+                  return StoryItem.pageImage(
+                      controller: storyController, url: data['remotePath']);
+                }).toList());
+          }
+        },
+      ),
+    );
   }
 }
