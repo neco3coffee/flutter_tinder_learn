@@ -50,7 +50,7 @@ class AppPages {
     GetPage(
       name: Routes.STORY,
       page: () => MoreStories(),
-      // binding: StoryBinding(),
+      binding: AccountBinding(),
     ),
   ];
 }

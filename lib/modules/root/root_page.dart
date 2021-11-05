@@ -31,17 +31,6 @@ class RootPage extends StatelessWidget {
             unselectedLabelStyle: unselectedLabelStyle,
             selectedLabelStyle: selectedLabelStyle,
             items: [
-              // BottomNavigationBarItem(
-              //   icon: Container(
-              //     margin: EdgeInsets.only(bottom: 7),
-              //     child: Icon(
-              //       Icons.note_add_outlined,
-              //       size: 20.0,
-              //     ),
-              //   ),
-              //   label: 'Note',
-              //   backgroundColor: Color.fromRGBO(36, 54, 101, 1.0),
-              // ),
               BottomNavigationBarItem(
                 icon: Container(
                   margin: EdgeInsets.only(bottom: 7),
@@ -87,18 +76,19 @@ class RootPage extends StatelessWidget {
     final RootPageController rootPageController =
         Get.put(RootPageController(), permanent: false);
     return SafeArea(
-        child: Scaffold(
-      bottomNavigationBar:
-          buildBottomNavigationMenu(context, rootPageController),
-      body: Obx(() => IndexedStack(
-            index: rootPageController.tabIndex.value,
-            children: [
-              // NotePage(),
-              HomeView(),
-              AddStoryView(),
-              AccountView(),
-            ],
-          )),
-    ));
+      child: Scaffold(
+        bottomNavigationBar:
+            buildBottomNavigationMenu(context, rootPageController),
+        body: Obx(() => IndexedStack(
+              index: rootPageController.tabIndex.value,
+              children: [
+                // NotePage(),
+                HomeView(),
+                AddStoryView(),
+                AccountView(),
+              ],
+            )),
+      ),
+    );
   }
 }

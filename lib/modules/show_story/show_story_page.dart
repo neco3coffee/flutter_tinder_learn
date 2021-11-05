@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tinder_learn/modules/home/home_controller.dart';
+import 'package:get/get.dart';
 import 'package:story_view/story_view.dart';
 
 class MoreStories extends StatefulWidget {
@@ -27,6 +29,7 @@ class _MoreStoriesState extends State<MoreStories> {
 
   @override
   Widget build(BuildContext context) {
+    final HomeController homeController = Get.put(HomeController());
     final DateTime now = DateTime.now();
     return Scaffold(
       body: StreamBuilder<QuerySnapshot>(
@@ -58,9 +61,18 @@ class _MoreStoriesState extends State<MoreStories> {
             ));
           } else {
             return StoryView(
+                onVerticalSwipeComplete: (direction) {
+                  if (direction == Direction.down) {
+                    Navigator.pop(context);
+                  }
+                },
                 controller: storyController,
                 progressPosition: ProgressPosition.top,
-                repeat: false,
+                repeat: true,
+                onComplete: () {
+                  homeController.shown.value = true;
+                  print('onComplete!🔥');
+                },
                 storyItems:
                     snapshot.data!.docs.map((DocumentSnapshot document) {
                   Map<String, dynamic> data =

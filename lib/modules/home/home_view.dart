@@ -3,10 +3,12 @@ import 'package:get/get.dart';
 import '../../routes/app_pages.dart';
 
 import 'home.dart';
+import '../../shared/shared.dart';
 
 class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
+    final HomeController homeController = Get.find();
     return Scaffold(
       appBar: AppBar(
         title: Text('👀instantLearn✌️'),
@@ -202,25 +204,28 @@ class HomeView extends GetView<HomeController> {
           SizedBox(
             height: 100,
           ),
-          Center(
-            child: InkWell(
-              onTap: () {
+          Obx(
+            () => UnicornOutlineButton(
+              strokeWidth: 4,
+              radius: 100,
+              gradient: homeController.shown.value //shown
+                  ? const LinearGradient(
+                      colors: [Colors.white, Colors.white],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    )
+                  : const LinearGradient(
+                      colors: [Colors.blue, Colors.yellow],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+              child: Text('''
+            
+     👀     
+            ''', style: TextStyle(fontSize: 70, height: 1)),
+              onPressed: () {
                 Get.toNamed(Routes.STORY);
               },
-              child: Container(
-                width: 150,
-                height: 150,
-                child: Container(
-                  width: 65,
-                  height: 65,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                          image: NetworkImage(
-                              '${controller.auth.currentUser!.photoURL}'),
-                          fit: BoxFit.cover)),
-                ),
-              ),
             ),
           ),
         ],
