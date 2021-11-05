@@ -15,6 +15,8 @@ class _MoreStoriesState extends State<MoreStories> {
   @override
   initState() {
     super.initState();
+    final DateTime now = DateTime.now();
+    final todaydayo = '${now.year}/${now.month}/${now.day}';
   }
 
   @override
@@ -25,13 +27,16 @@ class _MoreStoriesState extends State<MoreStories> {
 
   @override
   Widget build(BuildContext context) {
+    final DateTime now = DateTime.now();
     return Scaffold(
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('users')
             .doc(auth.currentUser!.uid)
             .collection('storyList')
-            .orderBy('createdDay', descending: false)
+            .where('iterationList',
+                arrayContains: '${now.year}/${now.month}/${now.day}')
+            // .orderBy('createdDay', descending: false)
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {

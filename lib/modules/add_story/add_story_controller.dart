@@ -38,6 +38,24 @@ class AddStoryController extends GetxController {
   Future<void> uploadFile(String filePath) async {
     File file = File(filePath);
     DateTime now = DateTime.now();
+    final oneDayFromNow = now.add(const Duration(days: 1));
+    final twoDaysFromNow = now.add(const Duration(days: 2));
+    final threeDaysFromNow = now.add(const Duration(days: 3));
+    final fiveDaysFromNow = now.add(const Duration(days: 5));
+    final eightDaysFromNow = now.add(const Duration(days: 8));
+    final fifteenDaysFromNow = now.add(const Duration(days: 15));
+    final twentyOneDaysFromNow = now.add(const Duration(days: 21));
+    final thirtyFourDaysFromNow = now.add(const Duration(days: 34));
+    final fiftyFiveDaysFromNow = now.add(const Duration(days: 55));
+    final eightyNineDaysFromNow = now.add(const Duration(days: 89));
+    final oneHundredFourtyFourDaysFromNow = now.add(const Duration(days: 144));
+    final twoHundredThirtyThreeDaysFromNow = now.add(const Duration(days: 233));
+    final threeHundredSeventySeveDaysFromNow =
+        now.add(const Duration(days: 377));
+    final sixHundredTenDaysFromNow = now.add(const Duration(days: 610));
+    final nineHundredEightySevenDaysFromNow =
+        now.add(const Duration(days: 987));
+
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;
     final currentUserId = await firebaseAuth.currentUser!.uid;
     CollectionReference stories = FirebaseFirestore.instance
@@ -59,7 +77,25 @@ class AddStoryController extends GetxController {
                 'remotePath': url,
                 'localPath': filePath,
                 'shown': false,
-                'createdDay': now,
+                'createdAt': '${now.year}/${now.month}/${now.day}',
+                'iterationList': [
+                  '${now.year}/${now.month}/${now.day}',
+                  '${oneDayFromNow.year}/${oneDayFromNow.month}/${oneDayFromNow.day}',
+                  '${twoDaysFromNow.year}/${twoDaysFromNow.month}/${twoDaysFromNow.day}',
+                  '${threeDaysFromNow.year}/${threeDaysFromNow.month}/${threeDaysFromNow.day}',
+                  '${fiveDaysFromNow.year}/${fiveDaysFromNow.month}/${fiveDaysFromNow.day}',
+                  '${eightDaysFromNow.year}/${eightDaysFromNow.month}/${eightDaysFromNow.day}',
+                  '${fifteenDaysFromNow.year}/${fifteenDaysFromNow.month}/${fifteenDaysFromNow.day}',
+                  '${twentyOneDaysFromNow.year}/${twentyOneDaysFromNow.month}/${twentyOneDaysFromNow.day}',
+                  '${thirtyFourDaysFromNow.year}/${thirtyFourDaysFromNow.month}/${thirtyFourDaysFromNow.day}',
+                  '${fiftyFiveDaysFromNow.year}/${fiftyFiveDaysFromNow.month}/${fiftyFiveDaysFromNow.day}',
+                  '${eightyNineDaysFromNow.year}/${eightyNineDaysFromNow.month}/${eightyNineDaysFromNow.day}',
+                  '${oneHundredFourtyFourDaysFromNow.year}/${oneHundredFourtyFourDaysFromNow.month}/${oneHundredFourtyFourDaysFromNow.day}',
+                  '${twoHundredThirtyThreeDaysFromNow.year}/${twoHundredThirtyThreeDaysFromNow.month}/${twoHundredThirtyThreeDaysFromNow.day}',
+                  '${threeHundredSeventySeveDaysFromNow.year}/${threeHundredSeventySeveDaysFromNow.month}/${threeHundredSeventySeveDaysFromNow.day}',
+                  '${sixHundredTenDaysFromNow.year}/${sixHundredTenDaysFromNow.month}/${sixHundredTenDaysFromNow.day}',
+                  '${nineHundredEightySevenDaysFromNow.year}/${nineHundredEightySevenDaysFromNow.month}/${nineHundredEightySevenDaysFromNow.day}'
+                ]
               })
               .then((value) => print('story added to firestore'))
               .catchError((error) => print('$error')));
