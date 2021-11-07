@@ -4,6 +4,29 @@ import '../../routes/app_pages.dart';
 
 import 'home.dart';
 import '../../shared/shared.dart';
+import '../../api/api.dart';
+// import 'dart:ui';
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui';
+
+// import 'package:device_info/device_info.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+// import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:http/http.dart' as http;
+import 'package:image/image.dart' as image;
+import 'package:path_provider/path_provider.dart';
+import 'package:rxdart/subjects.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+
+// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class HomeView extends GetView<HomeController> {
   @override
@@ -208,17 +231,19 @@ class HomeView extends GetView<HomeController> {
             () => UnicornOutlineButton(
               strokeWidth: 4,
               radius: 100,
-              gradient: homeController.shown.value //shown
-                  ? const LinearGradient(
-                      colors: [Colors.white, Colors.white],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    )
-                  : const LinearGradient(
-                      colors: [Colors.blue, Colors.yellow],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
+              gradient:
+                  // controller.box.read('shownx')
+                  homeController.shown.value
+                      ? const LinearGradient(
+                          colors: [Colors.white, Colors.white],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        )
+                      : const LinearGradient(
+                          colors: [Colors.blue, Colors.yellow],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
               child: Text('''
             
      👀     
@@ -227,6 +252,30 @@ class HomeView extends GetView<HomeController> {
                 Get.toNamed(Routes.STORY);
               },
             ),
+          ),
+          // ElevatedButton(
+          //   child: const Text('Button'),
+          //   style: ElevatedButton.styleFrom(
+          //     primary: Colors.orange,
+          //     onPrimary: Colors.white,
+          //   ),
+          //   onPressed: () {
+          //     NotificationApi.showNotification(
+          //       title: '👀story',
+          //       body: '今日のストーリーをチャチャっと復習しましょう',
+          //       payload: 'sarah.abs',
+          //     );
+          //   },
+          // ),
+          ElevatedButton(
+            child: const Text('Button'),
+            style: ElevatedButton.styleFrom(
+              primary: Colors.orange,
+              onPrimary: Colors.white,
+            ),
+            onPressed: () {
+              NotificationApi.scheduleDailyTenAMNotification();
+            },
           ),
         ],
       ),

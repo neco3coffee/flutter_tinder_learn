@@ -60,6 +60,8 @@ class _MoreStoriesState extends State<MoreStories> {
               child: Text('storyがありません！'),
             ));
           } else {
+            // homeController.shown.value = false;
+
             return StoryView(
                 onVerticalSwipeComplete: (direction) {
                   if (direction == Direction.down) {
@@ -71,7 +73,11 @@ class _MoreStoriesState extends State<MoreStories> {
                 repeat: true,
                 onComplete: () {
                   homeController.shown.value = true;
+                  homeController.box
+                      .write('shownx', homeController.shown.value);
+                  // homeController.box.write('shownx', true);
                   print('onComplete!🔥');
+                  print(homeController.box.read('shownx'));
                 },
                 storyItems:
                     snapshot.data!.docs.map((DocumentSnapshot document) {
